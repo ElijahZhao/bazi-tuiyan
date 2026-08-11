@@ -194,7 +194,9 @@ function generateChartId(input: BirthInput): string {
   const dateStr = `${input.year}${String(input.month).padStart(2, '0')}${String(input.day).padStart(2, '0')}${String(input.hour).padStart(2, '0')}${String(input.minute).padStart(2, '0')}`;
   const genderStr = input.gender === '男' ? 'M' : 'F';
   const lonStr = String(Math.round(input.longitude * 100));
-  return `${dateStr}${genderStr}${lonStr}`;
+  const tzStr = `T${String(input.timezone ?? 8)}`;
+  const nzStr = input.enableNightZi === false ? 'NZ0' : 'NZ1';
+  return `${dateStr}${genderStr}${lonStr}${tzStr}${nzStr}`;
 }
 
 // ============================================================

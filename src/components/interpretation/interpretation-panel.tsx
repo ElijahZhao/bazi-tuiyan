@@ -217,6 +217,15 @@ function AiTab({ chart }: { chart: BaziChart }) {
   const [hasLoaded, setHasLoaded] = useState(false);
 
   const chatContainerRef = useRef<HTMLDivElement>(null);
+  // 跟踪当前进行中的请求，组件卸载或重新发起请求时中止旧请求
+  const abortControllerRef = useRef<AbortController | null>(null);
+
+  // 组件卸载时中止所有进行中的请求，防止旧命盘的流式回调污染新命盘
+  useEffect(() => {
+    return () => {
+      abortControllerRef.current?.abort();
+    };
+  }, []);
 
   // 自动滚动对话容器到底部（仅影响内部容器，不滚动浏览器页面）
   useEffect(() => {
@@ -345,14 +354,19 @@ function AiTab({ chart }: { chart: BaziChart }) {
     };
   };
 
-  // 流式读取（含文本清洗）
-  const readStream = async (response: Response): Promise<string> => {
+  // 流式读取（含文本清洗），支持 AbortSignal 中断
+  const readStream = async (response: Response, signal?: AbortSignal): Promise<string> => {
     const reader = response.body?.getReader();
     const decoder = new TextDecoder();
     let full = "";
 
     if (reader) {
       while (true) {
+        // 检查是否已被中止
+        if (signal?.aborted) {
+          reader.cancel();
+          break;
+        }
         const { done, value } = await reader.read();
         if (done) break;
         const text = decoder.decode(value, { stream: true });
@@ -366,6 +380,11 @@ function AiTab({ chart }: { chart: BaziChart }) {
 
   // 生成初始解读
   const handleGenerate = async () => {
+    // 中止前一个进行中的请求
+    abortControllerRef.current?.abort();
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
     setLoading(true);
     setError("");
     setStreamingText("");
@@ -376,19 +395,26 @@ function AiTab({ chart }: { chart: BaziChart }) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ features: getFeatures() }),
+        signal: controller.signal,
       });
 
       if (!response.ok) {
         throw new Error(`API 返回 ${response.status}`);
       }
 
-      const full = await readStream(response);
-      setMessages([{ role: "assistant", content: full }]);
+      const full = await readStream(response, controller.signal);
+      if (!controller.signal.aborted) {
+        setMessages([{ role: "assistant", content: full }]);
+      }
     } catch (err) {
+      if (err instanceof DOMException && err.name === "AbortError") return;
       setError(err instanceof Error ? err.message : "解读生成失败，请稍后重试");
     } finally {
-      setLoading(false);
-      setStreamingText("");
+      if (!controller.signal.aborted) {
+        setLoading(false);
+        setStreamingText("");
+      }
+      abortControllerRef.current = null;
     }
   };
 
@@ -396,6 +422,11 @@ function AiTab({ chart }: { chart: BaziChart }) {
   const handleAsk = async () => {
     const q = question.trim();
     if (!q || loading) return;
+
+    // 中止前一个进行中的请求
+    abortControllerRef.current?.abort();
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
 
     const userMsg: ChatMessage = { role: "user", content: q };
     const newMessages = [...messages, userMsg];
@@ -415,19 +446,26 @@ function AiTab({ chart }: { chart: BaziChart }) {
           question: q,
           features: getFeatures(),
         }),
+        signal: controller.signal,
       });
 
       if (!response.ok) {
         throw new Error(`API 返回 ${response.status}`);
       }
 
-      const full = await readStream(response);
-      setMessages([...newMessages, { role: "assistant", content: full }]);
+      const full = await readStream(response, controller.signal);
+      if (!controller.signal.aborted) {
+        setMessages([...newMessages, { role: "assistant", content: full }]);
+      }
     } catch (err) {
+      if (err instanceof DOMException && err.name === "AbortError") return;
       setError(err instanceof Error ? err.message : "追问失败，请稍后重试");
     } finally {
-      setLoading(false);
-      setStreamingText("");
+      if (!controller.signal.aborted) {
+        setLoading(false);
+        setStreamingText("");
+      }
+      abortControllerRef.current = null;
     }
   };
 

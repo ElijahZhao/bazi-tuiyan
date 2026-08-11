@@ -34,6 +34,7 @@ function buildChartUrl(chart: SavedChart): string {
     min: String(chart.input.minute),
     g: chart.input.gender,
     lon: String(chart.input.longitude),
+    tz: String(chart.input.timezone ?? 8),
     city: chart.input.birthPlace || "",
     nz: chart.input.enableNightZi ? "1" : "0",
   });

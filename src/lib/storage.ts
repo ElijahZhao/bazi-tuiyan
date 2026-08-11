@@ -18,6 +18,7 @@ export interface SavedChart {
     gender: "男" | "女";
     longitude: number;
     birthPlace?: string;
+    timezone?: number;
     enableNightZi?: boolean;
   };
   savedAt: string;
@@ -50,6 +51,12 @@ export function deleteChart(id: string): void {
   if (typeof window === "undefined") return;
   const charts = getSavedCharts().filter((c) => c.id !== id);
   localStorage.setItem(STORAGE_KEY, JSON.stringify(charts));
+  // 同时清理该命盘对应的 AI 对话记录，避免残留
+  try {
+    localStorage.removeItem(`bazi-ai-chat-${id}`);
+  } catch {
+    // ignore
+  }
 }
 
 export function renameChart(id: string, name: string): void {
