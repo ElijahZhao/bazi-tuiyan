@@ -102,7 +102,7 @@ body {
   border: 1px solid var(--color-border);
   border-radius: 0.75rem;
   box-shadow: 0 1px 3px rgba(28, 25, 23, 0.06), 0 1px 2px rgba(28, 25, 23, 0.04);
-  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
 }
 .ink-card:hover {
   box-shadow: 0 4px 12px rgba(28, 25, 23, 0.08), 0 2px 4px rgba(28, 25, 23, 0.04);
@@ -168,7 +168,11 @@ body {
   background: var(--color-vermilion);
 }
 
-/* 动画 */
+/* ============================================================
+   动画系统
+   ============================================================ */
+
+/* 淡入上移 */
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -181,11 +185,83 @@ body {
 }
 .animate-fade-in-up {
   animation: fadeInUp 0.5s ease-out forwards;
+  opacity: 0;
 }
 
+/* 罗盘缓慢旋转 */
+@keyframes slowSpin {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+.animate-slow-spin {
+  animation: slowSpin 120s linear infinite;
+}
+
+/* CTA 脉冲光晕 */
+@keyframes ctaPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(185, 28, 28, 0.3); }
+  50% { box-shadow: 0 0 0 8px rgba(185, 28, 28, 0); }
+}
+.animate-cta-pulse {
+  animation: ctaPulse 2.5s ease-in-out infinite;
+}
+
+/* 数字递增弹跳 */
+@keyframes countBounce {
+  0% { transform: scale(0.8); opacity: 0; }
+  60% { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
+}
+.animate-count-bounce {
+  animation: countBounce 0.6s ease-out forwards;
+}
+
+/* 渐变流光 */
 @keyframes shimmer {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
+}
+
+/* 标题渐变 */
+.title-gradient {
+  background: linear-gradient(135deg, #1c1917 0%, #b91c1c 50%, #1c1917 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 6s linear infinite;
+}
+
+/* Bento 卡片悬浮效果 */
+.ink-card:hover {
+  transform: translateY(-2px);
+}
+
+/* 统计数字悬浮 */
+.stat-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(28, 25, 23, 0.1);
+}
+
+/* 链接下划线动画 */
+.link-underline {
+  position: relative;
+}
+.link-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--color-vermilion);
+  transition: width 0.3s ease;
+}
+.link-underline:hover::after {
+  width: 100%;
 }
 
 /* 输入框 */
