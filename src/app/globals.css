@@ -1,0 +1,216 @@
+@import "tailwindcss";
+
+/* ============================================================
+   八字推演 — 现代东方设计系统
+   配色：宣纸底 + 水墨黑 + 朱砂红 + 翡翠绿 + 鎏金
+   ============================================================ */
+
+@theme {
+  /* 基础色 */
+  --color-background: #f7f3ed;
+  --color-foreground: #1c1917;
+
+  /* 主题色 */
+  --color-primary: #1c1917;
+  --color-primary-foreground: #f7f3ed;
+
+  /* 朱砂红 */
+  --color-vermilion: #b91c1c;
+  --color-vermilion-light: #dc2626;
+  --color-vermilion-dark: #991b1b;
+
+  /* 翡翠绿 */
+  --color-jade: #047857;
+  --color-jade-light: #10b981;
+  --color-jade-dark: #065f46;
+
+  /* 鎏金 */
+  --color-gold: #a16207;
+  --color-gold-light: #ca8a04;
+  --color-gold-dark: #854d0e;
+
+  /* 靛青 */
+  --color-indigo-deep: #312e81;
+
+  /* 宣纸色系 */
+  --color-paper: #f7f3ed;
+  --color-paper-dark: #ede8de;
+  --color-paper-darker: #ddd6c8;
+
+  /* 水墨色系 */
+  --color-ink: #1c1917;
+  --color-ink-light: #44403c;
+  --color-ink-lighter: #78716c;
+  --color-ink-lightest: #a8a29e;
+
+  /* 五行色 */
+  --color-wood: #10b981;
+  --color-fire: #ef4444;
+  --color-earth: #f59e0b;
+  --color-metal: #94a3b8;
+  --color-water: #3b82f6;
+
+  /* 边框 */
+  --color-border: #d6d3d1;
+  --color-border-dark: #a8a29e;
+
+  /* 卡片 */
+  --color-card: #ffffff;
+  --color-card-foreground: #1c1917;
+
+  /* 字体 */
+  --font-sans: var(--font-geist-sans), system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-mono: var(--font-geist-mono), "SF Mono", "Cascadia Code", monospace;
+  --font-serif: "Noto Serif SC", "Source Han Serif SC", "STSong", "SimSun", serif;
+}
+
+/* ============================================================
+   基础样式
+   ============================================================ */
+
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 滚动条 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-paper-dark);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-ink-lightest);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-ink-lighter);
+}
+
+/* ============================================================
+   组件样式
+   ============================================================ */
+
+/* 墨韵卡片 */
+.ink-card {
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px rgba(28, 25, 23, 0.06), 0 1px 2px rgba(28, 25, 23, 0.04);
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+.ink-card:hover {
+  box-shadow: 0 4px 12px rgba(28, 25, 23, 0.08), 0 2px 4px rgba(28, 25, 23, 0.04);
+}
+
+/* 朱砂按钮 */
+.vermilion-btn {
+  background: var(--color-vermilion);
+  color: #fef2f2;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+.vermilion-btn:hover {
+  background: var(--color-vermilion-light);
+}
+.vermilion-btn:active {
+  transform: scale(0.98);
+}
+.vermilion-btn:disabled {
+  background: var(--color-ink-lightest);
+  cursor: not-allowed;
+}
+
+/* 天干地支大字 */
+.ganzhi-text {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+/* 标题字体 */
+.heading-font {
+  font-family: var(--font-serif);
+  font-weight: 700;
+}
+
+/* 印章风格标签 */
+.seal-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.125rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+/* 分隔线 */
+.ink-divider {
+  border-top: 1px solid var(--color-border);
+  position: relative;
+}
+.ink-divider::after {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2rem;
+  height: 2px;
+  background: var(--color-vermilion);
+}
+
+/* 动画 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-in-up {
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* 输入框 */
+.ink-input {
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  color: var(--color-foreground);
+  font-size: 0.875rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  outline: none;
+}
+.ink-input:focus {
+  border-color: var(--color-vermilion);
+  box-shadow: 0 0 0 2px rgba(185, 28, 28, 0.1);
+}
+
+/* 链接 */
+.ink-link {
+  color: var(--color-vermilion);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.ink-link:hover {
+  color: var(--color-vermilion-light);
+  text-decoration: underline;
+}
