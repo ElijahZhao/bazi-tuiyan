@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
+import { MysticBackground } from "@/components/animations/visual-effects";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -64,7 +65,7 @@ function Navbar() {
 
 function Footer() {
   return (
-    <footer className="border-t border-border/50 bg-white/40 backdrop-blur-sm">
+    <footer className="border-t border-border/50 bg-white/40 backdrop-blur-sm relative z-10">
       <div className="mx-auto max-w-6xl px-4 py-8">
         {/* 装饰性分隔线 */}
         <div className="ink-divider mb-8" />
@@ -120,9 +121,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       lang="zh-CN"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-paper">
+      <body className="min-h-full flex flex-col bg-paper relative">
+        {/* 全局玄学法器背景 — 所有页面共享 */}
+        <MysticBackground />
         <Navbar />
-        <main className="flex-1">{children}</main>
+        <main className="flex-1 relative z-10">{children}</main>
         <Footer />
       </body>
     </html>

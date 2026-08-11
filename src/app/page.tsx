@@ -7,8 +7,6 @@ import type { BirthInput } from "@/lib/engine/types";
 import { getLunarMonths, getLunarMonthDays, getLeapMonth, lunarToSolar } from "@/lib/lunar-utils";
 import {
   ScrollReveal,
-  AuroraBackground,
-  ParticleField,
   MagneticButton,
   CountUp,
   TiltCard,
@@ -209,30 +207,13 @@ export default function HomePage() {
   return (
     <div className="ink-wash-bg relative">
       {/* ====================================================
-          全页面背景装饰 — 极光 + 粒子
-          ==================================================== */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-        {/* 全页面极光渐变 */}
-        <AuroraBackground interactive />
-        {/* 全页面粒子星空 */}
-        <ParticleField
-          className="absolute inset-0 w-full h-full"
-          count={50}
-          color="185, 28, 28"
-          maxSize={2}
-        />
-        {/* 底部渐变遮罩 */}
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-paper to-transparent" />
-      </div>
-
-      {/* ====================================================
           Hero 区域 — 全屏沉浸式
           ==================================================== */}
-      <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
+      <section className="relative min-h-[60vh] flex items-center justify-center overflow-hidden">
         {/* 八卦罗盘装饰 — 双层旋转 */}
         <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
           {/* 外层罗盘 */}
-          <div className="absolute w-[700px] h-[700px] opacity-[0.04] animate-slow-spin text-ink">
+          <div className="absolute w-[600px] h-[600px] opacity-[0.05] animate-slow-spin text-ink">
             <svg viewBox="0 0 200 200" className="w-full h-full">
               <circle cx="100" cy="100" r="95" fill="none" stroke="currentColor" strokeWidth="0.3" />
               <circle cx="100" cy="100" r="80" fill="none" stroke="currentColor" strokeWidth="0.3" />
@@ -270,7 +251,7 @@ export default function HomePage() {
             </svg>
           </div>
           {/* 内层太极 */}
-          <div className="absolute w-[400px] h-[400px] opacity-[0.06] animate-slow-spin-reverse text-ink">
+          <div className="absolute w-[350px] h-[350px] opacity-[0.07] animate-slow-spin-reverse text-ink">
             <svg viewBox="0 0 200 200" className="w-full h-full">
               <circle cx="100" cy="100" r="90" fill="none" stroke="currentColor" strokeWidth="0.5" />
               <path d="M 100 10 A 90 90 0 0 1 100 190 A 45 45 0 0 1 100 100 A 45 45 0 0 0 100 10 Z" fill="currentColor" />
@@ -281,7 +262,7 @@ export default function HomePage() {
         </div>
 
         {/* Hero 内容 */}
-        <div className="relative z-10 mx-auto max-w-3xl px-4 py-20 text-center">
+        <div className="relative z-10 mx-auto max-w-3xl px-4 py-12 text-center">
           {/* 标题 */}
           <ScrollReveal direction="up" delay={0.1} duration={0.8}>
             <h1 className="heading-font title-gradient text-6xl md:text-7xl mb-4">
@@ -350,9 +331,9 @@ export default function HomePage() {
       {/* ====================================================
           功能特性 Bento Grid — 玻璃态 + 倾斜卡片
           ==================================================== */}
-      <section className="relative mx-auto max-w-4xl px-4 py-20">
+      <section className="relative mx-auto max-w-4xl px-4 py-10">
         <ScrollReveal direction="up" duration={0.7}>
-          <div className="mb-10 text-center">
+          <div className="mb-8 text-center">
             <span className="seal-tag bg-gold/90 text-white mb-3 inline-flex">核心特性</span>
             <h2 className="heading-font text-3xl text-ink mb-2 mt-3">九层排盘引擎</h2>
             <p className="text-sm text-ink-lighter">古籍为宗，天文为准</p>
@@ -387,8 +368,8 @@ export default function HomePage() {
 
       {/* ====================================================
           统计数据 — CountUp 动画
-          ==================================================== */}
-      <section className="mx-auto max-w-4xl px-4 py-12">
+          ============================================================ */}
+      <section className="mx-auto max-w-4xl px-4 py-8">
         <ScrollReveal
           direction="scale"
           stagger={0.1}
@@ -411,7 +392,7 @@ export default function HomePage() {
       {/* ====================================================
           排盘表单 — 增强版
           ==================================================== */}
-      <section id="paipan" className="relative mx-auto max-w-2xl px-4 py-20 scroll-mt-20">
+      <section id="paipan" className="relative mx-auto max-w-2xl px-4 py-12 scroll-mt-20">
         <ScrollReveal direction="up" duration={0.7}>
           <div className="mb-8 text-center">
             <span className="seal-tag bg-indigo-deep/90 text-white mb-3 inline-flex">排盘入口</span>

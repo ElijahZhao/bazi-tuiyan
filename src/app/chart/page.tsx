@@ -11,7 +11,7 @@ import { saveChart } from "@/lib/storage";
 import ChartSection from "@/components/charts/chart-section";
 import InterpretationPanel from "@/components/interpretation/interpretation-panel";
 import { PillarEntrance, ElementRing, useDaYunScroll } from "@/components/animations/gsap-effects";
-import { ScrollReveal, AuroraBackground, ParticleField } from "@/components/animations/visual-effects";
+import { ScrollReveal } from "@/components/animations/visual-effects";
 
 // ============================================================
 // 工具函数
@@ -101,17 +101,6 @@ function ChartContent() {
 
   return (
     <div className="relative min-h-screen">
-      {/* 全页面背景装饰 */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-        <AuroraBackground />
-        <ParticleField
-          className="absolute inset-0 w-full h-full"
-          count={30}
-          color="185, 28, 28"
-          maxSize={1.5}
-        />
-      </div>
-
       <div className="relative z-10 mx-auto max-w-5xl px-4 py-8">
         {/* ========== 标题区 — 增强版 ========== */}
         <ScrollReveal direction="fade" duration={0.6}>
