@@ -623,7 +623,7 @@ export function MysticBackground() {
         gsap.to(rune, {
           y: `+=${25 + Math.random() * 40}`,
           x: `+=${(Math.random() - 0.5) * 30}`,
-          opacity: 0.08 + Math.random() * 0.06,
+          opacity: 0.18 + Math.random() * 0.10,
           duration: 8 + Math.random() * 8,
           repeat: -1,
           yoyo: true,
@@ -673,7 +673,7 @@ export function MysticBackground() {
       aria-hidden="true"
     >
       {/* === 极光渐变层 === */}
-      <AuroraBackground />
+      <AuroraBackground interactive />
 
       {/* === 双层粒子星空 — 鎏金 + 朱砂 === */}
       <ParticleField
@@ -702,13 +702,13 @@ export function MysticBackground() {
       />
 
       {/* === 八卦罗盘 — 左上（增强：多环 + 二十四山 + 八卦符号 + 天心十字） === */}
-      <div className="parallax-slow absolute top-[3%] left-[2%] w-[380px] h-[380px] opacity-[0.08]">
+      <div className="parallax-slow absolute top-[3%] left-[2%] w-[380px] h-[380px] opacity-[0.18]">
         <svg viewBox="0 0 200 200" className="w-full h-full animate-mystic-spin" style={{ color: "var(--color-vermilion)" }}>
           {/* 多层环 */}
-          <circle cx="100" cy="100" r="95" fill="none" stroke="currentColor" strokeWidth="0.5" />
-          <circle cx="100" cy="100" r="85" fill="none" stroke="currentColor" strokeWidth="0.3" />
-          <circle cx="100" cy="100" r="70" fill="none" stroke="currentColor" strokeWidth="0.3" />
-          <circle cx="100" cy="100" r="55" fill="none" stroke="currentColor" strokeWidth="0.3" />
+          <circle cx="100" cy="100" r="95" fill="none" stroke="currentColor" strokeWidth="0.8" />
+          <circle cx="100" cy="100" r="85" fill="none" stroke="currentColor" strokeWidth="0.5" />
+          <circle cx="100" cy="100" r="70" fill="none" stroke="currentColor" strokeWidth="0.5" />
+          <circle cx="100" cy="100" r="55" fill="none" stroke="currentColor" strokeWidth="0.5" />
           {/* 二十四山刻线 */}
           {Array.from({ length: 24 }, (_, i) => {
             const angle = i * 15 - 90;
@@ -766,10 +766,10 @@ export function MysticBackground() {
       </div>
 
       {/* === 太极图 — 右下（增强：外环八卦） === */}
-      <div className="parallax-fast absolute bottom-[5%] right-[2%] w-[340px] h-[340px] opacity-[0.10]">
+      <div className="parallax-fast absolute bottom-[5%] right-[2%] w-[340px] h-[340px] opacity-[0.20]">
         <svg viewBox="0 0 200 200" className="w-full h-full animate-mystic-spin-reverse" style={{ color: "var(--color-ink)" }}>
-          <circle cx="100" cy="100" r="95" fill="none" stroke="currentColor" strokeWidth="0.4" />
-          <circle cx="100" cy="100" r="90" fill="none" stroke="currentColor" strokeWidth="0.8" />
+          <circle cx="100" cy="100" r="95" fill="none" stroke="currentColor" strokeWidth="0.6" />
+          <circle cx="100" cy="100" r="90" fill="none" stroke="currentColor" strokeWidth="1.2" />
           {/* 太极图 */}
           <path
             d="M 100 10 A 90 90 0 0 1 100 190 A 45 45 0 0 1 100 100 A 45 45 0 0 0 100 10 Z"
@@ -802,10 +802,10 @@ export function MysticBackground() {
       </div>
 
       {/* === 小型罗盘 — 右上（十二地支） === */}
-      <div className="parallax-slow absolute top-[10%] right-[8%] w-[180px] h-[180px] opacity-[0.06]">
+      <div className="parallax-slow absolute top-[10%] right-[8%] w-[180px] h-[180px] opacity-[0.15]">
         <svg viewBox="0 0 200 200" className="w-full h-full animate-mystic-spin" style={{ color: "var(--color-gold)" }}>
-          <circle cx="100" cy="100" r="95" fill="none" stroke="currentColor" strokeWidth="0.5" />
-          <circle cx="100" cy="100" r="70" fill="none" stroke="currentColor" strokeWidth="0.3" />
+          <circle cx="100" cy="100" r="95" fill="none" stroke="currentColor" strokeWidth="0.8" />
+          <circle cx="100" cy="100" r="70" fill="none" stroke="currentColor" strokeWidth="0.5" />
           {DIZHI.map((zhi, i) => {
             const angle = (i * 30 - 90) * Math.PI / 180;
             return (
@@ -827,12 +827,12 @@ export function MysticBackground() {
       </div>
 
       {/* === 法器：铜钱 — 左下（太平天国纹） === */}
-      <div className="parallax-fast absolute bottom-[15%] left-[5%] w-[120px] h-[120px] opacity-[0.07]">
+      <div className="parallax-fast absolute bottom-[15%] left-[5%] w-[120px] h-[120px] opacity-[0.16]">
         <div className="animate-float-slow w-full h-full">
           <svg viewBox="0 0 100 100" style={{ color: "var(--color-gold)" }}>
-            <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" strokeWidth="1.5" />
-            <circle cx="50" cy="50" r="40" fill="none" stroke="currentColor" strokeWidth="0.5" />
-            <rect x="35" y="35" width="30" height="30" fill="none" stroke="currentColor" strokeWidth="1.5" />
+            <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" strokeWidth="2" />
+            <circle cx="50" cy="50" r="40" fill="none" stroke="currentColor" strokeWidth="0.8" />
+            <rect x="35" y="35" width="30" height="30" fill="none" stroke="currentColor" strokeWidth="2" />
             <text x="50" y="28" textAnchor="middle" fontSize="10" fill="currentColor" fontFamily="serif">天</text>
             <text x="50" y="80" textAnchor="middle" fontSize="10" fill="currentColor" fontFamily="serif">国</text>
             <text x="22" y="55" textAnchor="middle" fontSize="10" fill="currentColor" fontFamily="serif">太</text>
@@ -842,14 +842,14 @@ export function MysticBackground() {
       </div>
 
       {/* === 法器：葫芦 — 中右 === */}
-      <div className="parallax-slow absolute top-[45%] right-[12%] w-[100px] h-[140px] opacity-[0.05]">
+      <div className="parallax-slow absolute top-[45%] right-[12%] w-[100px] h-[140px] opacity-[0.20]">
         <div className="animate-float-slow w-full h-full">
           <svg viewBox="0 0 100 140" style={{ color: "var(--color-jade)" }}>
             <path
               d="M50 10 Q35 15 35 30 Q35 40 45 45 Q30 50 25 70 Q25 120 50 130 Q75 120 75 70 Q70 50 55 45 Q65 40 65 30 Q65 15 50 10 Z"
               fill="none"
               stroke="currentColor"
-              strokeWidth="1.2"
+              strokeWidth="1.8"
             />
             <line x1="50" y1="10" x2="50" y2="5" stroke="currentColor" strokeWidth="1" />
             <path d="M45 5 Q50 0 55 5" fill="none" stroke="currentColor" strokeWidth="1" />
@@ -859,7 +859,7 @@ export function MysticBackground() {
       </div>
 
       {/* === 祥云纹 — 左中 === */}
-      <div className="parallax-fast absolute top-[20%] left-[15%] w-[200px] h-[80px] opacity-[0.05]">
+      <div className="parallax-fast absolute top-[20%] left-[15%] w-[200px] h-[80px] opacity-[0.20]">
         <div className="animate-drift w-full h-full">
           <svg viewBox="0 0 200 80" className="w-full h-full" style={{ color: "var(--color-indigo-deep)" }}>
             <path
@@ -876,7 +876,7 @@ export function MysticBackground() {
       </div>
 
       {/* === 祥云纹 — 右中下 === */}
-      <div className="parallax-slow absolute bottom-[30%] right-[20%] w-[160px] h-[60px] opacity-[0.04]">
+      <div className="parallax-slow absolute bottom-[30%] right-[20%] w-[160px] h-[60px] opacity-[0.18]">
         <div className="animate-drift w-full h-full" style={{ animationDelay: "3s" }}>
           <svg viewBox="0 0 200 80" className="w-full h-full" style={{ color: "var(--color-vermilion)" }}>
             <path
@@ -899,7 +899,7 @@ export function MysticBackground() {
             left: `${5 + Math.random() * 85}%`,
             fontSize: `${28 + Math.random() * 40}px`,
             color: i % 2 === 0 ? "var(--color-vermilion)" : "var(--color-indigo-deep)",
-            opacity: 0.06,
+            opacity: 0.14,
           }}
         >
           {gan}
@@ -916,7 +916,7 @@ export function MysticBackground() {
             left: `${3 + Math.random() * 88}%`,
             fontSize: `${24 + Math.random() * 36}px`,
             color: i % 3 === 0 ? "var(--color-gold)" : i % 3 === 1 ? "var(--color-jade)" : "var(--color-ink)",
-            opacity: 0.055,
+            opacity: 0.13,
           }}
         >
           {zhi}
@@ -933,7 +933,7 @@ export function MysticBackground() {
             left: `${8 + Math.random() * 80}%`,
             fontSize: `${32 + Math.random() * 28}px`,
             color: i === 0 ? "var(--color-gold)" : i === 1 ? "var(--color-jade)" : i === 2 ? "var(--color-water)" : i === 3 ? "var(--color-vermilion)" : "var(--color-earth)",
-            opacity: 0.05,
+            opacity: 0.12,
           }}
         >
           {el}
@@ -950,25 +950,24 @@ export function MysticBackground() {
             left: `${5 + Math.random() * 85}%`,
             fontSize: `${20 + Math.random() * 24}px`,
             color: i % 2 === 0 ? "var(--color-ink)" : "var(--color-gold)",
-            opacity: 0.04,
+            opacity: 0.11,
           }}
         >
           {name}
         </span>
       ))}
 
-      {/* === 回纹顶饰 === */}
+      {/* === 回纹顶饰 — 朱砂色中国传统几何纹样 === */}
       <div
-        className="absolute top-0 left-0 right-0 h-[8px] opacity-[0.08]"
+        className="absolute top-0 left-0 right-0 h-[14px] opacity-[0.28] z-[1]"
         style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='8' viewBox='0 0 40 8'%3E%3Cpath d='M0 4 L6 4 L6 1 L2 1 L2 7 L10 7 L10 4 L16 4 L16 1 L12 1 L12 7 L20 7 L20 4 L26 4 L26 1 L22 1 L22 7 L30 7 L30 4 L36 4 L36 1 L32 1 L32 7 L40 7' fill='none' stroke='%23b91c1c' stroke-width='0.6'/%3E%3C/svg%3E")`,
+          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='14' viewBox='0 0 40 14'%3E%3Cpath d='M0 7 L6 7 L6 2 L2 2 L2 12 L10 12 L10 7 L16 7 L16 2 L12 2 L12 12 L20 12 L20 7 L26 7 L26 2 L22 2 L22 12 L30 12 L30 7 L36 7 L36 2 L32 2 L32 12 L40 12' fill='none' stroke='%23b91c1c' stroke-width='1'/%3E%3C/svg%3E")`,
           backgroundRepeat: "repeat-x",
         }}
       />
 
-      {/* === 顶部和底部渐变遮罩 === */}
-      <div className="absolute top-0 left-0 right-0 h-20 bg-gradient-to-b from-paper to-transparent" />
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-paper to-transparent" />
+      {/* === 底部渐变遮罩（仅底部，不遮顶部回纹） === */}
+      <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-paper to-transparent" />
     </div>
   );
 }
