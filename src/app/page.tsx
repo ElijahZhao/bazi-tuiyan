@@ -34,7 +34,7 @@ const FEATURES = [
     desc: "VSOP87+DE440算法，节气偏差<30秒",
     color: "from-indigo-deep/10 to-indigo-deep/5",
     border: "border-indigo-deep/20",
-    span: "",
+    span: "md:col-span-2",
   },
   {
     icon: "📅",
@@ -207,22 +207,28 @@ export default function HomePage() {
   };
 
   return (
-    <div className="ink-wash-bg">
+    <div className="ink-wash-bg relative">
+      {/* ====================================================
+          全页面背景装饰 — 极光 + 粒子
+          ==================================================== */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+        {/* 全页面极光渐变 */}
+        <AuroraBackground interactive />
+        {/* 全页面粒子星空 */}
+        <ParticleField
+          className="absolute inset-0 w-full h-full"
+          count={50}
+          color="185, 28, 28"
+          maxSize={2}
+        />
+        {/* 底部渐变遮罩 */}
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-paper to-transparent" />
+      </div>
+
       {/* ====================================================
           Hero 区域 — 全屏沉浸式
           ==================================================== */}
-      <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden grid-bg">
-        {/* 极光渐变背景 */}
-        <AuroraBackground interactive />
-
-        {/* 粒子星空 */}
-        <ParticleField
-          className="absolute inset-0 w-full h-full"
-          count={80}
-          color="185, 28, 28"
-          maxSize={2.5}
-        />
-
+      <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
         {/* 八卦罗盘装饰 — 双层旋转 */}
         <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
           {/* 外层罗盘 */}
@@ -276,16 +282,9 @@ export default function HomePage() {
 
         {/* Hero 内容 */}
         <div className="relative z-10 mx-auto max-w-3xl px-4 py-20 text-center">
-          {/* 徽章 */}
-          <ScrollReveal direction="fade" duration={0.5}>
-            <span className="seal-tag bg-vermilion/90 text-white backdrop-blur-sm shadow-lg">
-              开源 · 纯客户端 · 零延迟
-            </span>
-          </ScrollReveal>
-
           {/* 标题 */}
           <ScrollReveal direction="up" delay={0.1} duration={0.8}>
-            <h1 className="heading-font title-gradient text-6xl md:text-7xl mb-4 mt-6">
+            <h1 className="heading-font title-gradient text-6xl md:text-7xl mb-4">
               八字推演
             </h1>
           </ScrollReveal>
@@ -368,7 +367,7 @@ export default function HomePage() {
           duration={0.6}
           offset={5}
         >
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-4">
             {FEATURES.map((f, i) => (
               <TiltCard
                 key={i}

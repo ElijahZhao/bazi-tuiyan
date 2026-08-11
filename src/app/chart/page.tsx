@@ -11,7 +11,7 @@ import { saveChart } from "@/lib/storage";
 import ChartSection from "@/components/charts/chart-section";
 import InterpretationPanel from "@/components/interpretation/interpretation-panel";
 import { PillarEntrance, ElementRing, useDaYunScroll } from "@/components/animations/gsap-effects";
-import { ScrollReveal } from "@/components/animations/visual-effects";
+import { ScrollReveal, AuroraBackground, ParticleField } from "@/components/animations/visual-effects";
 
 // ============================================================
 // 工具函数
@@ -100,95 +100,153 @@ function ChartContent() {
   };
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8 space-y-6">
-      {/* ========== 标题区 ========== */}
-      <ScrollReveal direction="fade" duration={0.6}>
-        <div className="text-center">
-          <h1 className="heading-font text-3xl text-ink mb-2">命盘排演</h1>
-          <p className="text-sm text-ink-lighter">
-            {input.birthPlace} · {input.gender} · {input.year}年{input.month}月{input.day}日 {String(input.hour).padStart(2, "0")}:{String(input.minute).padStart(2, "0")}
-          </p>
-        </div>
-      </ScrollReveal>
-
-      {/* ========== 时间校正信息 ========== */}
-      <ScrollReveal direction="up" duration={0.6} offset={5}>
-        <TimeCorrectionInfo chart={chart} />
-      </ScrollReveal>
-
-      {/* ========== 四柱主表 ========== */}
-      <ScrollReveal direction="up" duration={0.6} offset={5}>
-        <PillarEntrance>
-          <FourPillarsTable chart={chart} />
-        </PillarEntrance>
-      </ScrollReveal>
-
-      {/* ========== 辅助宫位 ========== */}
-      <ScrollReveal direction="up" duration={0.6} offset={5}>
-        <AuxiliaryPalaces chart={chart} />
-      </ScrollReveal>
-
-      {/* ========== 大运 ========== */}
-      <ScrollReveal direction="up" duration={0.6} offset={5}>
-        <DaYunSection chart={chart} />
-      </ScrollReveal>
-
-      {/* ========== 流年 ========== */}
-      <ScrollReveal direction="up" duration={0.6} offset={5}>
-        <LiuNianSection chart={chart} />
-      </ScrollReveal>
-
-      {/* ========== 小运 ========== */}
-      <ScrollReveal direction="up" duration={0.6} offset={5}>
-        <XiaoYunSection chart={chart} />
-      </ScrollReveal>
-
-      {/* ========== 流月/流日/流时 ========== */}
-      <ScrollReveal direction="up" duration={0.6} offset={5}>
-        <LiuYueRiShiSection chart={chart} />
-      </ScrollReveal>
-
-      {/* ========== 关系分析 ========== */}
-      <ScrollReveal direction="up" duration={0.6} offset={5}>
-        <RelationsSection chart={chart} />
-      </ScrollReveal>
-
-      {/* ========== 旺衰格局 ========== */}
-      <ScrollReveal direction="up" duration={0.6} offset={5}>
-        <ProsperitySection chart={chart} />
-      </ScrollReveal>
-
-      {/* ========== 人元司令分野 ========== */}
-      <ScrollReveal direction="up" duration={0.6} offset={5}>
-        <RenYuanSiLingSection chart={chart} />
-      </ScrollReveal>
-
-      {/* ========== 可视化图表 ========== */}
-      <ScrollReveal direction="up" duration={0.6} offset={5}>
-        <ChartSection chart={chart} />
-      </ScrollReveal>
-
-      {/* ========== 五行统计 ========== */}
-      <ScrollReveal direction="up" duration={0.6} offset={5}>
-        <ElementCountSection chart={chart} />
-      </ScrollReveal>
-
-      {/* ========== 命局解读 ========== */}
-      <ScrollReveal direction="up" duration={0.6} offset={5}>
-        <InterpretationPanel chart={chart} />
-      </ScrollReveal>
-
-      {/* ========== 保存命盘 ========== */}
-      <ScrollReveal direction="fade" duration={0.6}>
-        <SaveSection
-          saved={saved}
-          showSaveInput={showSaveInput}
-          saveName={saveName}
-          setSaveName={setSaveName}
-          setShowSaveInput={setShowSaveInput}
-          onSave={handleSave}
+    <div className="relative min-h-screen">
+      {/* 全页面背景装饰 */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+        <AuroraBackground />
+        <ParticleField
+          className="absolute inset-0 w-full h-full"
+          count={30}
+          color="185, 28, 28"
+          maxSize={1.5}
         />
-      </ScrollReveal>
+      </div>
+
+      <div className="relative z-10 mx-auto max-w-5xl px-4 py-8">
+        {/* ========== 标题区 — 增强版 ========== */}
+        <ScrollReveal direction="fade" duration={0.6}>
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center gap-2 mb-3">
+              <span className="seal-tag bg-vermilion text-white">命盘排演</span>
+            </div>
+            <h1 className="heading-font title-gradient text-4xl mb-3">
+              {chart.dayMaster}{chart.dayMasterElement}命 · {chart.prosperity?.pattern || "格局待定"}
+            </h1>
+            <div className="flex flex-wrap items-center justify-center gap-3 text-sm text-ink-lighter">
+              <span>{input.birthPlace}</span>
+              <span className="text-ink-lightest">·</span>
+              <span>{input.gender}</span>
+              <span className="text-ink-lightest">·</span>
+              <span>{input.year}年{input.month}月{input.day}日 {String(input.hour).padStart(2, "0")}:{String(input.minute).padStart(2, "0")}</span>
+              <span className="text-ink-lightest">·</span>
+              <span className="text-gold-dark">{chart.fourPillars.year.ganzhi}年</span>
+            </div>
+            <div className="ink-divider mt-4 mx-auto max-w-[200px]" />
+          </div>
+        </ScrollReveal>
+
+        {/* ========== 核心排盘 ========== */}
+        <SectionGroup title="核心排盘" tag="四柱八字" color="bg-vermilion">
+          <ScrollReveal direction="up" duration={0.6} offset={5}>
+            <TimeCorrectionInfo chart={chart} />
+          </ScrollReveal>
+
+          <ScrollReveal direction="up" duration={0.6} offset={5}>
+            <PillarEntrance>
+              <FourPillarsTable chart={chart} />
+            </PillarEntrance>
+          </ScrollReveal>
+
+          <ScrollReveal direction="up" duration={0.6} offset={5}>
+            <AuxiliaryPalaces chart={chart} />
+          </ScrollReveal>
+        </SectionGroup>
+
+        {/* ========== 运势流转 ========== */}
+        <SectionGroup title="运势流转" tag="大运流年" color="bg-jade">
+          <ScrollReveal direction="up" duration={0.6} offset={5}>
+            <DaYunSection chart={chart} />
+          </ScrollReveal>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <ScrollReveal direction="up" duration={0.6} offset={5}>
+              <LiuNianSection chart={chart} />
+            </ScrollReveal>
+            <ScrollReveal direction="up" duration={0.6} offset={5}>
+              <XiaoYunSection chart={chart} />
+            </ScrollReveal>
+          </div>
+
+          <ScrollReveal direction="up" duration={0.6} offset={5}>
+            <LiuYueRiShiSection chart={chart} />
+          </ScrollReveal>
+        </SectionGroup>
+
+        {/* ========== 格局分析 ========== */}
+        <SectionGroup title="格局分析" tag="旺衰用神" color="bg-indigo-deep">
+          <ScrollReveal direction="up" duration={0.6} offset={5}>
+            <ProsperitySection chart={chart} />
+          </ScrollReveal>
+
+          <ScrollReveal direction="up" duration={0.6} offset={5}>
+            <RelationsSection chart={chart} />
+          </ScrollReveal>
+
+          <ScrollReveal direction="up" duration={0.6} offset={5}>
+            <RenYuanSiLingSection chart={chart} />
+          </ScrollReveal>
+        </SectionGroup>
+
+        {/* ========== 可视化与统计 ========== */}
+        <SectionGroup title="五行可视化" tag="能量分布" color="bg-gold">
+          <ScrollReveal direction="up" duration={0.6} offset={5}>
+            <ChartSection chart={chart} />
+          </ScrollReveal>
+
+          <ScrollReveal direction="up" duration={0.6} offset={5}>
+            <ElementCountSection chart={chart} />
+          </ScrollReveal>
+        </SectionGroup>
+
+        {/* ========== 命局解读 ========== */}
+        <SectionGroup title="命局解读" tag="古法断语 · AI润色" color="bg-vermilion">
+          <ScrollReveal direction="up" duration={0.6} offset={5}>
+            <InterpretationPanel chart={chart} />
+          </ScrollReveal>
+        </SectionGroup>
+
+        {/* ========== 保存命盘 ========== */}
+        <ScrollReveal direction="fade" duration={0.6}>
+          <SaveSection
+            saved={saved}
+            showSaveInput={showSaveInput}
+            saveName={saveName}
+            setSaveName={setSaveName}
+            setShowSaveInput={setShowSaveInput}
+            onSave={handleSave}
+          />
+        </ScrollReveal>
+      </div>
+    </div>
+  );
+}
+
+// ============================================================
+// 分区容器 — 视觉层次分组
+// ============================================================
+
+function SectionGroup({
+  title,
+  tag,
+  color,
+  children,
+}: {
+  title: string;
+  tag: string;
+  color: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="mb-12">
+      {/* 分区标题 */}
+      <div className="flex items-center gap-3 mb-6">
+        <span className={`seal-tag ${color} text-white`}>{tag}</span>
+        <h2 className="heading-font text-xl text-ink">{title}</h2>
+        <div className="flex-1 h-px bg-gradient-to-r from-border to-transparent" />
+      </div>
+      <div className="space-y-6">
+        {children}
+      </div>
     </div>
   );
 }
