@@ -94,7 +94,7 @@ export async function POST(request: NextRequest) {
     const prompt = buildPrompt(body.features);
 
     // 检查 API key
-    const apiKey = process.env.DEEPSEEK_API_KEY || process.env.LLM_API_KEY;
+    const apiKey = process.env.ARK_API_KEY || process.env.LLM_API_KEY;
 
     if (!apiKey) {
       // 无 API key 时返回降级提示
@@ -115,15 +115,15 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // 调用 LLM API（DeepSeek 或其他兼容接口）
-    const llmResponse = await fetch("https://api.deepseek.com/v1/chat/completions", {
+    // 调用火山方舟 LLM API（OpenAI 兼容接口）
+    const llmResponse = await fetch("https://ark.cn-beijing.volces.com/api/v3/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: "deepseek-chat",
+        model: process.env.ARK_MODEL_ID || "deepseek-v4-flash-250731",
         messages: [
           {
             role: "system",
