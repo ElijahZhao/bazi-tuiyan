@@ -5,12 +5,12 @@
  *
  * Tab 切换「古法断语」/「AI 润色解读」
  * Tab 1：纯前端知识库，零臆造，每条标注出处
- * Tab 2：LLM 润色解读，需用户主动点击调用
+ * Tab 2：LLM 润色解读，对话式 UI，支持追问
  */
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { BookOpen, Sparkles, Loader2, ChevronDown, ChevronUp } from "lucide-react";
+import { BookOpen, Sparkles, Loader2, ChevronDown, ChevronUp, Send } from "lucide-react";
 import type { BaziChart } from "@/lib/engine/types";
 import { generateInterpretation, type InterpretationSection } from "@/lib/interpretation/knowledge-base";
 
@@ -181,64 +181,136 @@ function AncientTab({ sections }: { sections: InterpretationSection[] }) {
 }
 
 // ============================================================
-// Tab 2：AI 润色解读
+// Tab 2：AI 润色解读（对话式，支持追问）
 // ============================================================
 
-function AiTab({ chart }: { chart: BaziChart }) {
-  const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState("");
-  const [error, setError] = useState("");
+interface ChatMessage {
+  role: "user" | "assistant";
+  content: string;
+}
 
+function AiTab({ chart }: { chart: BaziChart }) {
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [streamingText, setStreamingText] = useState("");
+  const [error, setError] = useState("");
+  const [question, setQuestion] = useState("");
+
+  const chatEndRef = useRef<HTMLDivElement>(null);
+
+  // 自动滚动到底部
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, streamingText]);
+
+  // 提取命局特征
+  const getFeatures = () => ({
+    dayMaster: chart.dayMaster,
+    dayMasterElement: chart.dayMasterElement,
+    strength: chart.prosperity?.dayMasterStrength,
+    pattern: chart.prosperity?.pattern,
+    yongShen: chart.prosperity?.yongShen,
+    fourPillars: {
+      year: chart.fourPillars.year.ganzhi,
+      month: chart.fourPillars.month.ganzhi,
+      day: chart.fourPillars.day.ganzhi,
+      hour: chart.fourPillars.hour.ganzhi,
+    },
+    branchRelations: chart.branchRelations,
+    stemRelations: chart.stemRelations,
+    shenSha: chart.shenSha,
+  });
+
+  // 流式读取
+  const readStream = async (response: Response): Promise<string> => {
+    const reader = response.body?.getReader();
+    const decoder = new TextDecoder();
+    let full = "";
+
+    if (reader) {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const text = decoder.decode(value, { stream: true });
+        full += text;
+        setStreamingText(full);
+      }
+    }
+
+    return full;
+  };
+
+  // 生成初始解读
   const handleGenerate = async () => {
     setLoading(true);
     setError("");
-    setResult("");
+    setStreamingText("");
+    setMessages([]);
 
     try {
-      // 提取命局特征
-      const features = {
-        dayMaster: chart.dayMaster,
-        dayMasterElement: chart.dayMasterElement,
-        strength: chart.prosperity?.dayMasterStrength,
-        pattern: chart.prosperity?.pattern,
-        yongShen: chart.prosperity?.yongShen,
-        fourPillars: {
-          year: chart.fourPillars.year.ganzhi,
-          month: chart.fourPillars.month.ganzhi,
-          day: chart.fourPillars.day.ganzhi,
-          hour: chart.fourPillars.hour.ganzhi,
-        },
-        branchRelations: chart.branchRelations,
-        stemRelations: chart.stemRelations,
-        shenSha: chart.shenSha,
-      };
-
       const response = await fetch("/api/interpret", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ features }),
+        body: JSON.stringify({ features: getFeatures() }),
       });
 
       if (!response.ok) {
         throw new Error(`API 返回 ${response.status}`);
       }
 
-      // 流式读取
-      const reader = response.body?.getReader();
-      const decoder = new TextDecoder();
-
-      if (reader) {
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          const text = decoder.decode(value, { stream: true });
-          setResult((prev) => prev + text);
-        }
-      }
+      const full = await readStream(response);
+      setMessages([{ role: "assistant", content: full }]);
     } catch (err) {
       setError(err instanceof Error ? err.message : "解读生成失败，请稍后重试");
     } finally {
       setLoading(false);
+      setStreamingText("");
+    }
+  };
+
+  // 追问
+  const handleAsk = async () => {
+    const q = question.trim();
+    if (!q || loading) return;
+
+    const userMsg: ChatMessage = { role: "user", content: q };
+    const newMessages = [...messages, userMsg];
+
+    setMessages(newMessages);
+    setQuestion("");
+    setLoading(true);
+    setError("");
+    setStreamingText("");
+
+    try {
+      const response = await fetch("/api/interpret", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: newMessages,
+          question: q,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`API 返回 ${response.status}`);
+      }
+
+      const full = await readStream(response);
+      setMessages([...newMessages, { role: "assistant", content: full }]);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "追问失败，请稍后重试");
+    } finally {
+      setLoading(false);
+      setStreamingText("");
+    }
+  };
+
+  // 键盘事件
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleAsk();
     }
   };
 
@@ -249,12 +321,12 @@ function AiTab({ chart }: { chart: BaziChart }) {
         <p className="text-sm text-ink-lighter leading-relaxed">
           AI 润色解读基于古法规则库提取命局特征，交由大语言模型组织语言。
           <strong className="text-ink"> 仅润色语言，不引入规则库以外的新断语。</strong>
-          风格沉稳文言白话相间。
+          风格沉稳文言白话相间。生成后可追问。
         </p>
       </div>
 
-      {/* 生成按钮 */}
-      {!result && !loading && (
+      {/* 初始生成按钮 */}
+      {messages.length === 0 && !loading && (
         <button
           type="button"
           onClick={handleGenerate}
@@ -265,42 +337,121 @@ function AiTab({ chart }: { chart: BaziChart }) {
         </button>
       )}
 
-      {/* 加载中 */}
-      {loading && (
-        <div className="flex items-center justify-center gap-2 py-8 text-sm text-ink-lighter">
-          <Loader2 size={16} className="animate-spin" />
-          正在生成解读…
-        </div>
-      )}
-
-      {/* 错误 */}
-      {error && (
-        <div className="rounded-lg bg-vermilion/10 p-4 text-sm text-vermilion">
-          {error}
-        </div>
-      )}
-
-      {/* 结果 */}
-      {result && (
+      {/* 对话区 */}
+      {(messages.length > 0 || loading) && (
         <div className="space-y-3">
-          <div className="rounded-lg border border-border bg-paper/30 p-4">
-            <p className="text-sm leading-relaxed text-ink whitespace-pre-line">
-              {result}
-            </p>
+          {/* 消息列表 */}
+          <div className="space-y-3 max-h-[500px] overflow-y-auto pr-1">
+            {messages.map((msg, i) => (
+              <ChatBubble key={i} message={msg} />
+            ))}
+
+            {/* 流式输出中 */}
+            {loading && streamingText && (
+              <ChatBubble
+                message={{ role: "assistant", content: streamingText }}
+                streaming
+              />
+            )}
+
+            {/* 加载指示器（尚无内容时） */}
+            {loading && !streamingText && (
+              <div className="flex items-center gap-2 py-3 text-sm text-ink-lighter">
+                <Loader2 size={16} className="animate-spin" />
+                正在思考…
+              </div>
+            )}
+
+            <div ref={chatEndRef} />
           </div>
-          <div className="flex items-center gap-2 text-xs text-ink-lightest">
-            <span className="inline-block w-1 h-1 rounded-full bg-indigo-deep" />
-            <span>本解读由 AI 基于古法规则库润色生成，仅供参考</span>
+
+          {/* 错误提示 */}
+          {error && (
+            <div className="rounded-lg bg-vermilion/10 p-3 text-sm text-vermilion">
+              {error}
+            </div>
+          )}
+
+          {/* 追问输入框 */}
+          <div className="flex items-center gap-2 rounded-lg border border-border bg-card p-2">
+            <input
+              type="text"
+              value={question}
+              onChange={(e) => setQuestion(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="追问命局细节…（如：这个格局对事业有什么影响？）"
+              disabled={loading}
+              className="flex-1 bg-transparent text-sm text-ink placeholder:text-ink-lightest outline-none px-2"
+            />
+            <button
+              type="button"
+              onClick={handleAsk}
+              disabled={loading || !question.trim()}
+              className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-deep text-white transition-colors hover:bg-indigo-deep/90 disabled:bg-ink-lightest disabled:cursor-not-allowed"
+            >
+              <Send size={15} />
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={handleGenerate}
-            className="text-xs text-ink-lighter transition-colors hover:text-vermilion"
-          >
-            重新生成 →
-          </button>
+
+          {/* 底部操作 */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1.5 text-xs text-ink-lightest">
+              <span className="inline-block w-1 h-1 rounded-full bg-indigo-deep" />
+              <span>基于古法规则库润色，仅供参考</span>
+            </div>
+            <button
+              type="button"
+              onClick={handleGenerate}
+              disabled={loading}
+              className="text-xs text-ink-lighter transition-colors hover:text-vermilion disabled:opacity-50"
+            >
+              重新生成 →
+            </button>
+          </div>
         </div>
       )}
     </div>
+  );
+}
+
+// ============================================================
+// 对话气泡
+// ============================================================
+
+function ChatBubble({
+  message,
+  streaming = false,
+}: {
+  message: ChatMessage;
+  streaming?: boolean;
+}) {
+  const isUser = message.role === "user";
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2 }}
+      className={`flex ${isUser ? "justify-end" : "justify-start"}`}
+    >
+      <div
+        className={`max-w-[85%] rounded-2xl px-4 py-3 ${
+          isUser
+            ? "bg-indigo-deep text-white rounded-tr-sm"
+            : "bg-paper/60 text-ink rounded-tl-sm border border-border"
+        }`}
+      >
+        {!isUser && (
+          <div className="flex items-center gap-1.5 mb-1.5">
+            <Sparkles size={12} className="text-indigo-deep" />
+            <span className="text-xs font-medium text-indigo-deep">AI 解读</span>
+          </div>
+        )}
+        <p className={`text-sm leading-relaxed whitespace-pre-line ${isUser ? "text-white" : "text-ink"}`}>
+          {message.content}
+          {streaming && <span className="inline-block w-0.5 h-4 ml-0.5 bg-current animate-pulse align-middle" />}
+        </p>
+      </div>
+    </motion.div>
   );
 }
