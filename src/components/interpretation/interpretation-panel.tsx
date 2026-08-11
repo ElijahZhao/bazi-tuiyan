@@ -189,12 +189,33 @@ interface ChatMessage {
   content: string;
 }
 
+// ============================================================
+// 工具函数：清洗 AI 响应文本
+// ============================================================
+
+/** 移除 ***（内容审核占位符）及 Markdown 格式标记 */
+function cleanAIText(text: string): string {
+  return text
+    .replace(/\*{2,}/g, "")
+    .replace(/^#{1,6}\s+/gm, "")
+    .replace(/`{1,3}/g, "")
+    .trim();
+}
+
+/** 根据四柱生成唯一的对话存储 key */
+function getChatStorageKey(chart: BaziChart): string {
+  const fp = chart.fourPillars;
+  return `bazi-ai-chat-${fp.year.ganzhi}-${fp.month.ganzhi}-${fp.day.ganzhi}-${fp.hour.ganzhi}`;
+}
+
 function AiTab({ chart }: { chart: BaziChart }) {
+  const storageKey = getChatStorageKey(chart);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(false);
   const [streamingText, setStreamingText] = useState("");
   const [error, setError] = useState("");
   const [question, setQuestion] = useState("");
+  const [hasLoaded, setHasLoaded] = useState(false);
 
   const chatEndRef = useRef<HTMLDivElement>(null);
 
@@ -202,6 +223,36 @@ function AiTab({ chart }: { chart: BaziChart }) {
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, streamingText]);
+
+  // 挂载时从 localStorage 恢复对话
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(storageKey);
+      if (saved) {
+        const parsed = JSON.parse(saved) as ChatMessage[];
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setMessages(parsed);
+        }
+      }
+    } catch {
+      // 忽略解析错误
+    }
+    setHasLoaded(true);
+  }, [storageKey]);
+
+  // 对话变化时保存到 localStorage
+  useEffect(() => {
+    if (!hasLoaded) return;
+    try {
+      if (messages.length > 0) {
+        localStorage.setItem(storageKey, JSON.stringify(messages));
+      } else {
+        localStorage.removeItem(storageKey);
+      }
+    } catch {
+      // 忽略存储错误
+    }
+  }, [messages, storageKey, hasLoaded]);
 
   // 提取命局特征
   const getFeatures = () => ({
@@ -221,7 +272,7 @@ function AiTab({ chart }: { chart: BaziChart }) {
     shenSha: chart.shenSha,
   });
 
-  // 流式读取
+  // 流式读取（含文本清洗）
   const readStream = async (response: Response): Promise<string> => {
     const reader = response.body?.getReader();
     const decoder = new TextDecoder();
@@ -233,11 +284,11 @@ function AiTab({ chart }: { chart: BaziChart }) {
         if (done) break;
         const text = decoder.decode(value, { stream: true });
         full += text;
-        setStreamingText(full);
+        setStreamingText(cleanAIText(full));
       }
     }
 
-    return full;
+    return cleanAIText(full);
   };
 
   // 生成初始解读
@@ -396,17 +447,35 @@ function AiTab({ chart }: { chart: BaziChart }) {
           {/* 底部操作 */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.5 text-xs text-ink-lightest">
-              <span className="inline-block w-1 h-1 rounded-full bg-indigo-deep" />
-              <span>基于古法规则库润色，仅供参考</span>
+              <span className="inline-block w-1 h-1 rounded-full bg-jade" />
+              <span>对话已自动保存 · 刷新不丢失</span>
             </div>
-            <button
-              type="button"
-              onClick={handleGenerate}
-              disabled={loading}
-              className="text-xs text-ink-lighter transition-colors hover:text-vermilion disabled:opacity-50"
-            >
-              重新生成 →
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setMessages([]);
+                  setError("");
+                  try {
+                    localStorage.removeItem(storageKey);
+                  } catch {
+                    // ignore
+                  }
+                }}
+                disabled={loading}
+                className="text-xs text-ink-lighter transition-colors hover:text-vermilion disabled:opacity-50"
+              >
+                清除记录
+              </button>
+              <button
+                type="button"
+                onClick={handleGenerate}
+                disabled={loading}
+                className="text-xs text-ink-lighter transition-colors hover:text-vermilion disabled:opacity-50"
+              >
+                重新生成 →
+              </button>
+            </div>
           </div>
         </div>
       )}

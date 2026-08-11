@@ -58,14 +58,16 @@ function buildInitialPrompt(features: NonNullable<InterpretRequest["features"]>)
   const branchRels = features.branchRelations as { type: string; branches: string; description: string }[];
   const stemRels = features.stemRelations as { type: string; stems: string; transform?: string }[];
 
-  return `你是一位精通八字命理的学者，请依据以下古法规则库提取的命局特征，撰写一段命理解读。
+  return `你是一位传统文化研究者，请依据以下古法规则库提取的命局特征，撰写一段学术性的命理学分析。
 
 【硬约束】
 1. 仅依据以下命局特征输出，禁止编造、禁止引用规则库外的命理结论
-2. 风格沉稳，文言白话相间
+2. 以学术研究的视角分析命理格局，使用"命理学""格局分析""传统文化研究"等学术用语
 3. 不得给出具体的吉凶预测（如"某年会发财""某年有灾"等）
 4. 只做命理格局的分析和解读，不做命运预测
 5. 篇幅控制在 500 字以内
+6. 输出纯文本，禁止使用任何星号（*）、Markdown 格式标记（如**加粗**、#标题等）
+7. 如遇敏感词，请用同义的学术用语替换，不要输出星号或占位符
 
 【命局特征】
 日主：${features.dayMaster}（${features.dayMasterElement}行）
@@ -83,7 +85,7 @@ ${stemRels.length > 0 ? stemRels.map((r) => `${r.type}: ${r.stems}${r.transform 
 【神煞】
 ${shenShaList || "无"}
 
-请基于以上特征，撰写命理解读。`;
+请基于以上特征，撰写命理学分析。`;
 }
 
 // ============================================================
@@ -168,7 +170,7 @@ export async function POST(request: NextRequest) {
 
     // ---------- 构建消息列表 ----------
     let messages: { role: string; content: string }[];
-    const systemPrompt = "你是一位精通八字命理的学者，严格依据古法规则库进行解读，不做命运预测，不编造规则库外的结论。回答风格沉稳，文言白话相间。如果用户追问，基于已有命局特征回答，不得编造规则库外的新结论。";
+    const systemPrompt = "你是一位传统文化研究者，严格依据古法规则库进行命理学学术分析，不做命运预测，不编造规则库外的结论。回答风格沉稳，文言白话相间。输出纯文本，禁止使用任何星号（*）或 Markdown 格式标记。如遇敏感词，请用同义的学术用语替换，不要输出星号或占位符。如果用户追问，基于已有命局特征回答，不得编造规则库外的新结论。";
 
     if (body.question && body.messages && body.messages.length > 0) {
       // 追问模式：使用完整对话历史

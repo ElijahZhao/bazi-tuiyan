@@ -11,6 +11,7 @@ import { saveChart } from "@/lib/storage";
 import ChartSection from "@/components/charts/chart-section";
 import InterpretationPanel from "@/components/interpretation/interpretation-panel";
 import { PillarEntrance, ElementRing, useDaYunScroll } from "@/components/animations/gsap-effects";
+import { ScrollReveal } from "@/components/animations/visual-effects";
 
 // ============================================================
 // 工具函数
@@ -101,67 +102,93 @@ function ChartContent() {
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 space-y-6">
       {/* ========== 标题区 ========== */}
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="text-center"
-      >
-        <h1 className="heading-font text-3xl text-ink mb-2">命盘排演</h1>
-        <p className="text-sm text-ink-lighter">
-          {input.birthPlace} · {input.gender} · {input.year}年{input.month}月{input.day}日 {String(input.hour).padStart(2, "0")}:{String(input.minute).padStart(2, "0")}
-        </p>
-      </motion.div>
+      <ScrollReveal direction="fade" duration={0.6}>
+        <div className="text-center">
+          <h1 className="heading-font text-3xl text-ink mb-2">命盘排演</h1>
+          <p className="text-sm text-ink-lighter">
+            {input.birthPlace} · {input.gender} · {input.year}年{input.month}月{input.day}日 {String(input.hour).padStart(2, "0")}:{String(input.minute).padStart(2, "0")}
+          </p>
+        </div>
+      </ScrollReveal>
 
       {/* ========== 时间校正信息 ========== */}
-      <TimeCorrectionInfo chart={chart} />
+      <ScrollReveal direction="up" duration={0.6} offset={5}>
+        <TimeCorrectionInfo chart={chart} />
+      </ScrollReveal>
 
       {/* ========== 四柱主表 ========== */}
-      <PillarEntrance>
-        <FourPillarsTable chart={chart} />
-      </PillarEntrance>
+      <ScrollReveal direction="up" duration={0.6} offset={5}>
+        <PillarEntrance>
+          <FourPillarsTable chart={chart} />
+        </PillarEntrance>
+      </ScrollReveal>
 
       {/* ========== 辅助宫位 ========== */}
-      <AuxiliaryPalaces chart={chart} />
+      <ScrollReveal direction="up" duration={0.6} offset={5}>
+        <AuxiliaryPalaces chart={chart} />
+      </ScrollReveal>
 
       {/* ========== 大运 ========== */}
-      <DaYunSection chart={chart} />
+      <ScrollReveal direction="up" duration={0.6} offset={5}>
+        <DaYunSection chart={chart} />
+      </ScrollReveal>
 
       {/* ========== 流年 ========== */}
-      <LiuNianSection chart={chart} />
+      <ScrollReveal direction="up" duration={0.6} offset={5}>
+        <LiuNianSection chart={chart} />
+      </ScrollReveal>
 
       {/* ========== 小运 ========== */}
-      <XiaoYunSection chart={chart} />
+      <ScrollReveal direction="up" duration={0.6} offset={5}>
+        <XiaoYunSection chart={chart} />
+      </ScrollReveal>
 
       {/* ========== 流月/流日/流时 ========== */}
-      <LiuYueRiShiSection chart={chart} />
+      <ScrollReveal direction="up" duration={0.6} offset={5}>
+        <LiuYueRiShiSection chart={chart} />
+      </ScrollReveal>
 
       {/* ========== 关系分析 ========== */}
-      <RelationsSection chart={chart} />
+      <ScrollReveal direction="up" duration={0.6} offset={5}>
+        <RelationsSection chart={chart} />
+      </ScrollReveal>
 
       {/* ========== 旺衰格局 ========== */}
-      <ProsperitySection chart={chart} />
+      <ScrollReveal direction="up" duration={0.6} offset={5}>
+        <ProsperitySection chart={chart} />
+      </ScrollReveal>
 
       {/* ========== 人元司令分野 ========== */}
-      <RenYuanSiLingSection chart={chart} />
+      <ScrollReveal direction="up" duration={0.6} offset={5}>
+        <RenYuanSiLingSection chart={chart} />
+      </ScrollReveal>
 
       {/* ========== 可视化图表 ========== */}
-      <ChartSection chart={chart} />
+      <ScrollReveal direction="up" duration={0.6} offset={5}>
+        <ChartSection chart={chart} />
+      </ScrollReveal>
 
       {/* ========== 五行统计 ========== */}
-      <ElementCountSection chart={chart} />
+      <ScrollReveal direction="up" duration={0.6} offset={5}>
+        <ElementCountSection chart={chart} />
+      </ScrollReveal>
 
       {/* ========== 命局解读 ========== */}
-      <InterpretationPanel chart={chart} />
+      <ScrollReveal direction="up" duration={0.6} offset={5}>
+        <InterpretationPanel chart={chart} />
+      </ScrollReveal>
 
       {/* ========== 保存命盘 ========== */}
-      <SaveSection
-        saved={saved}
-        showSaveInput={showSaveInput}
-        saveName={saveName}
-        setSaveName={setSaveName}
-        setShowSaveInput={setShowSaveInput}
-        onSave={handleSave}
-      />
+      <ScrollReveal direction="fade" duration={0.6}>
+        <SaveSection
+          saved={saved}
+          showSaveInput={showSaveInput}
+          saveName={saveName}
+          setSaveName={setSaveName}
+          setShowSaveInput={setShowSaveInput}
+          onSave={handleSave}
+        />
+      </ScrollReveal>
     </div>
   );
 }
