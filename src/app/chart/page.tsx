@@ -1,13 +1,13 @@
 "use client";
 
-import { Suspense, useMemo, useRef, useState } from "react";
+import { Suspense, useMemo, useRef, useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { paipan } from "@/lib/engine/index";
 import type { BaziChart, BirthInput, FourPillars, PillarDetail } from "@/lib/engine/types";
 import { ELEMENT_COLORS, TEN_GOD_COLORS, formatStartAge } from "@/lib/utils";
-import { saveChart } from "@/lib/storage";
+import { saveChart, getSavedCharts } from "@/lib/storage";
 import ChartSection from "@/components/charts/chart-section";
 import InterpretationPanel from "@/components/interpretation/interpretation-panel";
 import { PillarEntrance, ElementRing, useDaYunScroll } from "@/components/animations/gsap-effects";
@@ -87,6 +87,18 @@ function ChartContent() {
   }, [searchParams]);
 
   const chart = useMemo(() => paipan(input), [input]);
+
+  // 命盘切换时重置保存状态，并检测当前命盘是否已保存
+  useEffect(() => {
+    setSaveName("");
+    setShowSaveInput(false);
+    try {
+      const exists = getSavedCharts().some((c) => c.id === chart.id);
+      setSaved(exists);
+    } catch {
+      setSaved(false);
+    }
+  }, [chart.id]);
 
   const handleSave = () => {
     if (!saveName.trim()) return;
