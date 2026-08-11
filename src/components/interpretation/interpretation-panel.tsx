@@ -217,11 +217,13 @@ function AiTab({ chart }: { chart: BaziChart }) {
   const [question, setQuestion] = useState("");
   const [hasLoaded, setHasLoaded] = useState(false);
 
-  const chatEndRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
 
-  // 自动滚动到底部
+  // 自动滚动对话容器到底部（仅影响内部容器，不滚动浏览器页面）
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    const container = chatContainerRef.current;
+    if (!container) return;
+    container.scrollTo({ top: container.scrollHeight, behavior: "smooth" });
   }, [messages, streamingText]);
 
   // 挂载时从 localStorage 恢复对话
@@ -392,7 +394,7 @@ function AiTab({ chart }: { chart: BaziChart }) {
       {(messages.length > 0 || loading) && (
         <div className="space-y-3">
           {/* 消息列表 */}
-          <div className="space-y-3 max-h-[500px] overflow-y-auto pr-1">
+          <div ref={chatContainerRef} className="space-y-3 max-h-[500px] overflow-y-auto pr-1">
             {messages.map((msg, i) => (
               <ChatBubble key={i} message={msg} />
             ))}
@@ -412,8 +414,6 @@ function AiTab({ chart }: { chart: BaziChart }) {
                 正在思考…
               </div>
             )}
-
-            <div ref={chatEndRef} />
           </div>
 
           {/* 错误提示 */}
