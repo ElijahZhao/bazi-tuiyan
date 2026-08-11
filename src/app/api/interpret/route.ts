@@ -123,7 +123,7 @@ export async function POST(request: NextRequest) {
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: process.env.ARK_MODEL_ID || "deepseek-v4-flash-250731",
+        model: process.env.ARK_MODEL_ID || "deepseek-v4-flash-ga-260731",
         messages: [
           {
             role: "system",
