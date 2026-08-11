@@ -35,9 +35,56 @@ interface InterpretRequest {
       day: string;
       hour: string;
     };
+    pillarDetails?: {
+      year: string;
+      month: string;
+      day: string;
+      hour: string;
+    };
     branchRelations: unknown[];
     stemRelations: unknown[];
     shenSha: Record<string, string[]>;
+    // 新增字段
+    daYun?: {
+      direction: string;
+      startAge: number;
+      steps: string;
+    };
+    liuNian?: string;
+    xiaoYun?: string;
+    auxiliary?: {
+      taiYuan: string;
+      mingGong: string;
+      shenGong: string;
+    };
+    tenGods?: {
+      year: string;
+      month: string;
+      hour: string;
+    };
+    nayin?: {
+      year: string;
+      month: string;
+      day: string;
+      hour: string;
+    };
+    lifeStages?: {
+      year: string;
+      month: string;
+      day: string;
+      hour: string;
+    };
+    kongWang?: {
+      day: string;
+      year: string;
+    };
+    anHeRelations?: string;
+    gongJiaRelations?: string;
+    elementCount?: string;
+    renYuanSiLing?: string;
+    liuYue?: string;
+    liuRi?: string;
+    liuShi?: string;
   };
   // 追问模式：传入完整对话历史
   messages?: ChatMessage[];
@@ -58,6 +105,14 @@ function buildInitialPrompt(features: NonNullable<InterpretRequest["features"]>)
   const branchRels = features.branchRelations as { type: string; branches: string; description: string }[];
   const stemRels = features.stemRelations as { type: string; stems: string; transform?: string }[];
 
+  const pd = features.pillarDetails;
+  const tg = features.tenGods;
+  const ny = features.nayin;
+  const ls = features.lifeStages;
+  const kw = features.kongWang;
+  const aux = features.auxiliary;
+  const dy = features.daYun;
+
   return `你是一位传统文化研究者，请依据以下古法规则库提取的命局特征，撰写一段学术性的命理学分析。
 
 【硬约束】
@@ -68,13 +123,32 @@ function buildInitialPrompt(features: NonNullable<InterpretRequest["features"]>)
 5. 篇幅控制在 500 字以内
 6. 输出纯文本，禁止使用任何星号（*）、Markdown 格式标记（如**加粗**、#标题等）
 7. 如遇敏感词，请用同义的学术用语替换，不要输出星号或占位符
+8. 以下数据即为该命盘的全部已知信息，用户追问时以此为准，不得声称"不知道"或"需要更多信息"
 
-【命局特征】
+【命局基本特征】
 日主：${features.dayMaster}（${features.dayMasterElement}行）
 四柱：${fp.year}年 ${fp.month}月 ${fp.day}日 ${fp.hour}时
 旺衰：${features.strength || "待定"}
 格局：${features.pattern || "待定"}
 用神：${features.yongShen || "待定"}
+
+【四柱详情】
+年柱：${pd?.year || fp.year}
+月柱：${pd?.month || fp.month}
+日柱：${pd?.day || fp.day}
+时柱：${pd?.hour || fp.hour}
+
+【十神分布】
+年柱十神：${tg?.year || "未定"}　月柱十神：${tg?.month || "未定"}　时柱十神：${tg?.hour || "未定"}
+
+【纳音】
+年：${ny?.year || "未定"}　月：${ny?.month || "未定"}　日：${ny?.day || "未定"}　时：${ny?.hour || "未定"}
+
+【十二长生】
+年：${ls?.year || "未定"}　月：${ls?.month || "未定"}　日：${ls?.day || "未定"}　时：${ls?.hour || "未定"}
+
+【五行计数】
+${features.elementCount || "未定"}
 
 【地支关系】
 ${branchRels.length > 0 ? branchRels.map((r) => `${r.type}: ${r.branches} - ${r.description}`).join("\n") : "无明显刑冲合害"}
@@ -82,10 +156,44 @@ ${branchRels.length > 0 ? branchRels.map((r) => `${r.type}: ${r.branches} - ${r.
 【天干关系】
 ${stemRels.length > 0 ? stemRels.map((r) => `${r.type}: ${r.stems}${r.transform ? ` → ${r.transform}` : ""}`).join("\n") : "无明显天干合冲"}
 
+【暗合关系】
+${features.anHeRelations || "无"}
+
+【拱夹虚邀】
+${features.gongJiaRelations || "无"}
+
 【神煞】
 ${shenShaList || "无"}
 
-请基于以上特征，撰写命理学分析。`;
+【空亡】
+日空：${kw?.day || "未定"}　年空：${kw?.year || "未定"}
+
+【辅助宫位】
+胎元：${aux?.taiYuan || "未定"}　命宫：${aux?.mingGong || "未定"}　身宫：${aux?.shenGong || "未定"}
+
+【人元司令分野】
+${features.renYuanSiLing || "未定"}
+
+【大运】
+排法：${dy?.direction || "未定"}行，起运岁数：${dy?.startAge || "未定"}岁
+大运序列：${dy?.steps || "未定"}
+
+【流年（近十年）】
+${features.liuNian || "未定"}
+
+【小运（近十年）】
+${features.xiaoYun || "未定"}
+
+【流月】
+${features.liuYue || "未定"}
+
+【流日】
+${features.liuRi || "未定"}
+
+【流时】
+${features.liuShi || "未定"}
+
+请基于以上全部命局特征，撰写命理学分析。`;
 }
 
 // ============================================================
@@ -157,7 +265,7 @@ export async function POST(request: NextRequest) {
       const encoder = new TextEncoder();
       const stream = new ReadableStream({
         start(controller) {
-          const fallbackText = `命主日主为${body.features!.dayMaster}${body.features!.dayMasterElement}，四柱${body.features!.fourPillars.year}年${body.features!.fourPillars.month}月${body.features!.fourPillars.day}日${body.features!.fourPillars.hour}时。\n\n旺衰：${body.features!.strength}，格局：${body.features!.pattern}，用神：${body.features!.yongShen || "待定"}。\n\n注：AI 解读服务未配置 API Key，此为规则库特征摘要。请配置 LLM API Key 后获取完整 AI 润色解读。`;
+          const fallbackText = `命主日主为${body.features!.dayMaster}${body.features!.dayMasterElement}，四柱${body.features!.fourPillars.year}年${body.features!.fourPillars.month}月${body.features!.fourPillars.day}日${body.features!.fourPillars.hour}时。\n\n旺衰：${body.features!.strength}，格局：${body.features!.pattern}，用神：${body.features!.yongShen || "待定"}。\n\n大运（${body.features!.daYun?.direction || "未定"}行，起运${body.features!.daYun?.startAge || "未定"}岁）：${body.features!.daYun?.steps || "未定"}\n\n流年：${body.features!.liuNian || "未定"}\n\n辅助宫位：胎元${body.features!.auxiliary?.taiYuan || "未定"}，命宫${body.features!.auxiliary?.mingGong || "未定"}，身宫${body.features!.auxiliary?.shenGong || "未定"}\n\n五行计数：${body.features!.elementCount || "未定"}\n\n注：AI 解读服务未配置 API Key，此为规则库特征摘要。请配置 LLM API Key 后获取完整 AI 润色解读。`;
           controller.enqueue(encoder.encode(fallbackText));
           controller.close();
         },
@@ -170,12 +278,18 @@ export async function POST(request: NextRequest) {
 
     // ---------- 构建消息列表 ----------
     let messages: { role: string; content: string }[];
-    const systemPrompt = "你是一位传统文化研究者，严格依据古法规则库进行命理学学术分析，不做命运预测，不编造规则库外的结论。回答风格沉稳，文言白话相间。输出纯文本，禁止使用任何星号（*）或 Markdown 格式标记。如遇敏感词，请用同义的学术用语替换，不要输出星号或占位符。如果用户追问，基于已有命局特征回答，不得编造规则库外的新结论。";
+    const systemPrompt = "你是一位传统文化研究者，严格依据古法规则库进行命理学学术分析，不做命运预测，不编造规则库外的结论。回答风格沉稳，文言白话相间。输出纯文本，禁止使用任何星号（*）或 Markdown 格式标记。如遇敏感词，请用同义的学术用语替换，不要输出星号或占位符。用户追问时，必须基于已提供的命局特征回答，不得声称不知道或要求用户提供更多信息——所有命盘数据已在你手中。不得自行思考或引入规则库以外的新断语。";
 
     if (body.question && body.messages && body.messages.length > 0) {
-      // 追问模式：使用完整对话历史
+      // 追问模式：注入命局特征 + 完整对话历史
+      const featuresContext = body.features
+        ? buildInitialPrompt(body.features)
+        : "";
+
       messages = [
         { role: "system", content: systemPrompt },
+        // 将命盘完整特征作为系统上下文注入
+        ...(featuresContext ? [{ role: "system", content: `以下是该命盘的完整已知信息，追问时以此为准：\n\n${featuresContext}` }] : []),
         ...body.messages.map((m) => ({ role: m.role, content: m.content })),
         { role: "user", content: body.question },
       ];

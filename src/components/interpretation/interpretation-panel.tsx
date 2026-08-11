@@ -256,23 +256,95 @@ function AiTab({ chart }: { chart: BaziChart }) {
     }
   }, [messages, storageKey, hasLoaded]);
 
-  // 提取命局特征
-  const getFeatures = () => ({
-    dayMaster: chart.dayMaster,
-    dayMasterElement: chart.dayMasterElement,
-    strength: chart.prosperity?.dayMasterStrength,
-    pattern: chart.prosperity?.pattern,
-    yongShen: chart.prosperity?.yongShen,
-    fourPillars: {
-      year: chart.fourPillars.year.ganzhi,
-      month: chart.fourPillars.month.ganzhi,
-      day: chart.fourPillars.day.ganzhi,
-      hour: chart.fourPillars.hour.ganzhi,
-    },
-    branchRelations: chart.branchRelations,
-    stemRelations: chart.stemRelations,
-    shenSha: chart.shenSha,
-  });
+  // 提取完整命局特征（包含命盘所有信息）
+  const getFeatures = () => {
+    const fp = chart.fourPillars;
+
+    // 大运流年
+    const daYunList = chart.daYun.steps.map((s) => `${s.startAge}岁(${s.startYear}年): ${s.pillar.ganzhi}`).join("、");
+    const liuNianList = chart.liuNian.slice(0, 10).map((l) => `${l.year}年: ${l.pillar.ganzhi}`).join("、");
+    const xiaoYunList = chart.xiaoYun.slice(0, 10).map((x) => `${x.age}岁: ${x.pillar.ganzhi}`).join("、");
+
+    // 四柱详情
+    const pillarDetail = (p: typeof fp.year) => {
+      const hidden = p.hiddenStems.map((h) => `${h.stem}(${h.type})`).join("、");
+      return `${p.ganzhi}（纳音:${p.nayin}，十神:${p.tenGod}，藏干:${hidden}，十二长生:${p.changSheng || "未定"}，旺衰:${p.wangShuai || "未定"}）`;
+    };
+
+    // 五行计数
+    const elementCountStr = Object.entries(chart.elementCount).map(([el, cnt]) => `${el}:${cnt}`).join("、");
+
+    // 流月流日流时
+    const liuYueList = chart.liuYue.map((m) => `${m.monthBranch}月:${m.pillar.ganzhi}`).join("、");
+    const liuRiStr = `${chart.liuRi.date}: ${chart.liuRi.pillar.ganzhi}`;
+    const liuShiList = chart.liuShi.map((s) => `${s.hourBranch}时:${s.pillar.ganzhi}`).join("、");
+
+    return {
+      dayMaster: chart.dayMaster,
+      dayMasterElement: chart.dayMasterElement,
+      strength: chart.prosperity?.dayMasterStrength,
+      pattern: chart.prosperity?.pattern,
+      yongShen: chart.prosperity?.yongShen,
+      fourPillars: {
+        year: chart.fourPillars.year.ganzhi,
+        month: chart.fourPillars.month.ganzhi,
+        day: chart.fourPillars.day.ganzhi,
+        hour: chart.fourPillars.hour.ganzhi,
+      },
+      pillarDetails: {
+        year: pillarDetail(fp.year),
+        month: pillarDetail(fp.month),
+        day: pillarDetail(fp.day),
+        hour: pillarDetail(fp.hour),
+      },
+      branchRelations: chart.branchRelations,
+      stemRelations: chart.stemRelations,
+      shenSha: chart.shenSha,
+      // 新增：大运流年
+      daYun: {
+        direction: chart.daYun.direction,
+        startAge: chart.daYun.startAge,
+        steps: daYunList,
+      },
+      liuNian: liuNianList,
+      xiaoYun: xiaoYunList,
+      // 新增：辅助宫位
+      auxiliary: {
+        taiYuan: chart.taiYuan.ganzhi,
+        mingGong: chart.mingGong.ganzhi,
+        shenGong: chart.shenGong.ganzhi,
+      },
+      // 新增：十神
+      tenGods: {
+        year: chart.tenGods.year,
+        month: chart.tenGods.month,
+        hour: chart.tenGods.hour,
+      },
+      // 新增：纳音
+      nayin: chart.nayin,
+      // 新增：十二长生
+      lifeStages: chart.lifeStages,
+      // 新增：空亡
+      kongWang: {
+        day: chart.kongWang.day.join("、"),
+        year: chart.kongWang.year.join("、"),
+      },
+      // 新增：暗合关系
+      anHeRelations: chart.anHeRelations.map((r) => `${r.branches}: ${r.description}`).join("、"),
+      // 新增：拱夹虚邀
+      gongJiaRelations: chart.gongJiaRelations.map((r) => `${r.type} ${r.branches}→虚${r.virtualBranch}(${r.transform})`).join("、"),
+      // 新增：五行计数
+      elementCount: elementCountStr,
+      // 新增：人元司令分野
+      renYuanSiLing: chart.renYuanSiLing.currentSegment
+        ? `当月司令:${chart.renYuanSiLing.currentSegment.stem}（${chart.renYuanSiLing.currentSegment.description}）`
+        : "未定",
+      // 新增：流月流日流时
+      liuYue: liuYueList,
+      liuRi: liuRiStr,
+      liuShi: liuShiList,
+    };
+  };
 
   // 流式读取（含文本清洗）
   const readStream = async (response: Response): Promise<string> => {
@@ -342,6 +414,7 @@ function AiTab({ chart }: { chart: BaziChart }) {
         body: JSON.stringify({
           messages: newMessages,
           question: q,
+          features: getFeatures(),
         }),
       });
 
