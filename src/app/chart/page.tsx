@@ -280,8 +280,8 @@ function FourPillarsTable({ chart }: { chart: BaziChart }) {
       {/* 藏干 */}
       <div className="ink-divider mb-4" />
       <div className="grid grid-cols-4 gap-2 mb-4">
-        {pillars.map(({ label }) => {
-          const hidden = chart.hiddenStems[label.replace("柱", "") as keyof typeof chart.hiddenStems];
+        {pillars.map(({ label, key }) => {
+          const hidden = chart.hiddenStems[key];
           return (
             <div key={label} className="text-center">
               <div className="text-xs text-ink-lightest mb-1">藏干</div>
@@ -302,8 +302,8 @@ function FourPillarsTable({ chart }: { chart: BaziChart }) {
               {label !== "日柱" && hidden.length > 0 && (
                 <div className="mt-1 space-y-0.5">
                   {hidden.map((h, i) => (
-                    <div key={i} className={`text-xs ${TEN_GOD_COLORS[chart.tenGods.hiddenStems[label.replace("柱", "") as keyof typeof chart.tenGods.hiddenStems][i]?.tenGod] || "text-ink-lightest"}`}>
-                      {chart.tenGods.hiddenStems[label.replace("柱", "") as keyof typeof chart.tenGods.hiddenStems][i]?.tenGod}
+                    <div key={i} className={`text-xs ${TEN_GOD_COLORS[chart.tenGods.hiddenStems[key][i]?.tenGod] || "text-ink-lightest"}`}>
+                      {chart.tenGods.hiddenStems[key][i]?.tenGod}
                     </div>
                   ))}
                 </div>
