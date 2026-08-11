@@ -112,7 +112,7 @@ export default function InterpretationPanel({ chart }: InterpretationPanelProps)
                   exit={{ opacity: 0, x: 10 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <AiTab chart={chart} />
+                  <AiTab key={chart.id} chart={chart} />
                 </motion.div>
               )}
             </AnimatePresence>
@@ -202,10 +202,9 @@ function cleanAIText(text: string): string {
     .trim();
 }
 
-/** 根据四柱生成唯一的对话存储 key */
+/** 根据命盘唯一 ID 生成对话存储 key，确保不同命盘对话完全隔离 */
 function getChatStorageKey(chart: BaziChart): string {
-  const fp = chart.fourPillars;
-  return `bazi-ai-chat-${fp.year.ganzhi}-${fp.month.ganzhi}-${fp.day.ganzhi}-${fp.hour.ganzhi}`;
+  return `bazi-ai-chat-${chart.id}`;
 }
 
 function AiTab({ chart }: { chart: BaziChart }) {
