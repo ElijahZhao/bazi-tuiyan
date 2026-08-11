@@ -12,6 +12,7 @@ import ChartSection from "@/components/charts/chart-section";
 import InterpretationPanel from "@/components/interpretation/interpretation-panel";
 import { PillarEntrance, ElementRing, useDaYunScroll } from "@/components/animations/gsap-effects";
 import { ScrollReveal } from "@/components/animations/visual-effects";
+import { Disclaimer } from "@/components/disclaimer";
 
 // ============================================================
 // 工具函数
@@ -204,6 +205,13 @@ function ChartContent() {
             setShowSaveInput={setShowSaveInput}
             onSave={handleSave}
           />
+        </ScrollReveal>
+
+        {/* ========== 免责声明 ========== */}
+        <ScrollReveal direction="fade" duration={0.6}>
+          <div className="mt-8">
+            <Disclaimer variant="full" />
+          </div>
         </ScrollReveal>
       </div>
     </div>

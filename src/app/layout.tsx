@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
 import { MysticBackground } from "@/components/animations/visual-effects";
+import { Disclaimer } from "@/components/disclaimer";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -109,6 +110,10 @@ function Footer() {
           <p className="text-xs text-ink-lightest">
             天文数据以中国科学院紫金山天文台为最终校准基准 · 排盘引擎纯客户端计算
           </p>
+          {/* 全局免责声明 */}
+          <div className="mt-2 max-w-2xl">
+            <Disclaimer variant="brief" />
+          </div>
         </div>
       </div>
     </footer>

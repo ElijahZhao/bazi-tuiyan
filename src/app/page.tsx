@@ -11,6 +11,7 @@ import {
   CountUp,
   TiltCard,
 } from "@/components/animations/visual-effects";
+import { Disclaimer } from "@/components/disclaimer";
 
 type CalendarType = "solar" | "lunar";
 
@@ -637,10 +638,11 @@ export default function HomePage() {
         </ScrollReveal>
 
         <ScrollReveal direction="fade" delay={0.3} duration={0.6}>
-          <div className="mt-6 text-center">
+          <div className="mt-6 text-center space-y-2">
             <p className="text-xs text-ink-lightest">
               排盘引擎全部纯客户端计算，无需联网，零网络延迟
             </p>
+            <Disclaimer variant="brief" className="max-w-lg mx-auto" />
           </div>
         </ScrollReveal>
       </section>

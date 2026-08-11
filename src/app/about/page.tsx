@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
+import { Disclaimer } from "@/components/disclaimer";
 
 /* ============================================================
    数据：12 部古籍原典
@@ -361,6 +362,11 @@ export default function AboutPage() {
           </ol>
         </div>
       </Section>
+
+      {/* 免责声明 */}
+      <div className="mb-12 animate-fade-in-up">
+        <Disclaimer variant="full" />
+      </div>
 
       {/* 结尾引导 */}
       <div className="mt-4 text-center animate-fade-in-up">
