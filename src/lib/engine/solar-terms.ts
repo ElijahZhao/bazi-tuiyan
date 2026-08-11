@@ -198,7 +198,7 @@ export function getSolarTermTime(year: number, termName: string): Date {
   };
 
   const [month, day] = termApproxDates[termName] || [1, 1];
-  const searchDate = new Date(year, month - 1, day, 0, 0, 0);
+  const searchDate = new Date(Date.UTC(year, month - 1, day, 0, 0, 0));
 
   // 在大致日期前后各搜索5天
   const startTime = new Date(searchDate.getTime() - 5 * 24 * 60 * 60 * 1000);
@@ -267,7 +267,7 @@ export function getMonthBranch(trueSolarTime: Date): string {
  * @returns 年柱索引（六十甲子中的位置，0-59）
  */
 export function getYearPillarIndex(trueSolarTime: Date): number {
-  const year = trueSolarTime.getFullYear();
+  const year = trueSolarTime.getUTCFullYear();
 
   // 计算立春交节时刻
   const lichunTime = getSolarTermTime(year, '立春');
@@ -313,12 +313,12 @@ export function getYearGanZhi(trueSolarTime: Date): { stem: string; branch: stri
  */
 export function getDayPillarIndex(date: Date): number {
   // 基准日：1900-01-01 = 甲戌日（六十甲子索引10）
-  const BASE_DATE = new Date(1900, 0, 1);
+  const BASE_DATE = new Date(Date.UTC(1900, 0, 1));
   const BASE_INDEX = 10;
 
-  // 计算日差（只取日期部分，不考虑时分）
-  const dateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-  const baseOnly = new Date(BASE_DATE.getFullYear(), BASE_DATE.getMonth(), BASE_DATE.getDate());
+  // 计算日差（只取日期部分，不考虑时分）— 使用 UTC 方法避免浏览器时区干扰
+  const dateOnly = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+  const baseOnly = new Date(Date.UTC(BASE_DATE.getUTCFullYear(), BASE_DATE.getUTCMonth(), BASE_DATE.getUTCDate()));
 
   const dayDiff = Math.round((dateOnly.getTime() - baseOnly.getTime()) / (24 * 60 * 60 * 1000));
 

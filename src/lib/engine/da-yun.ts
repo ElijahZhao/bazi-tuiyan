@@ -48,7 +48,7 @@ export function calculateStartAge(
   gender: Gender,
 ): { direction: '顺' | '逆'; startAge: number; startMonth: number; startDay: number; startHour: number } {
   const direction = getDaYunDirection(yearStem, gender);
-  const year = trueSolarTime.getFullYear();
+  const year = trueSolarTime.getUTCFullYear();
 
   let targetTermTime: Date;
   if (direction === '顺') {
@@ -150,7 +150,7 @@ export function calculateDaYun(
     }
     dayunIdx = ((dayunIdx % 60) + 60) % 60;
     const startAge = startAgeInfo.startAge + i * 10;
-    const startYear = trueSolarTime.getFullYear() + startAge;
+    const startYear = trueSolarTime.getUTCFullYear() + startAge;
     steps.push({ index: i + 1, startAge, startYear, pillar: pillarFromIndex(dayunIdx) });
   }
 
@@ -200,7 +200,7 @@ export function calculateLiuYue(liuNianYear: number): LiuYue[] {
 
 export function calculateLiuRi(date: Date): LiuRi {
   const idx = getDayPillarIndex(date);
-  const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+  const dateStr = `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, '0')}-${String(date.getUTCDate()).padStart(2, '0')}`;
   return { date: dateStr, pillar: pillarFromIndex(idx) };
 }
 

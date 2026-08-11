@@ -74,7 +74,7 @@ export function calcDayHourPillars(
   trueSolarTime: Date,
   enableNightZi: boolean = true,
 ): { dayPillar: Pillar; hourPillar: Pillar; isNightZi: boolean } {
-  const hour = trueSolarTime.getHours();
+  const hour = trueSolarTime.getUTCHours();
   const hourBranchIdx = getHourBranchIndex(hour);
 
   // 是否为夜子时（23:00-00:00）

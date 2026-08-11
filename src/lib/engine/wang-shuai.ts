@@ -43,7 +43,7 @@ export function getRenYuanSiLing(
   // 计算出生日在当月节气中的位置
   // 获取当月起始节气的交节时刻
   const termName = getJieNameForMonth(monthBranch);
-  const year = trueSolarTime.getFullYear();
+  const year = trueSolarTime.getUTCFullYear();
   const jieTime = getSolarTermTime(year, termName);
 
   // 计算出生日距节气交节时刻的天数

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { CITY_LONGITUDES } from "@/lib/engine/index";
+import { CITIES, REGION_LABELS, type CityRegion } from "@/lib/engine/constants";
 import type { BirthInput } from "@/lib/engine/types";
 
 export default function HomePage() {
@@ -16,13 +16,27 @@ export default function HomePage() {
   const [gender, setGender] = useState<"男" | "女">("男");
   const [city, setCity] = useState("北京");
   const [longitude, setLongitude] = useState("116.41");
+  const [timezone, setTimezone] = useState("8");
   const [enableNightZi, setEnableNightZi] = useState(true);
+
+  // 按地区分组城市
+  const citiesByRegion = Object.entries(CITIES).reduce(
+    (acc, [name, info]) => {
+      if (!acc[info.region]) acc[info.region] = [];
+      acc[info.region].push(name);
+      return acc;
+    },
+    {} as Record<CityRegion, string[]>
+  );
+
+  const regionOrder: CityRegion[] = ['china', 'asia', 'europe', 'america', 'oceania', 'africa'];
 
   const handleCityChange = (selectedCity: string) => {
     setCity(selectedCity);
-    const lon = CITY_LONGITUDES[selectedCity];
-    if (lon !== undefined) {
-      setLongitude(String(lon));
+    const info = CITIES[selectedCity];
+    if (info) {
+      setLongitude(String(info.longitude));
+      setTimezone(String(info.timezone));
     }
   };
 
@@ -38,6 +52,7 @@ export default function HomePage() {
       gender,
       longitude: parseFloat(longitude),
       birthPlace: city,
+      timezone: parseFloat(timezone),
       enableNightZi,
     };
 
@@ -50,6 +65,7 @@ export default function HomePage() {
       min: String(input.minute),
       g: input.gender,
       lon: String(input.longitude),
+      tz: String(input.timezone || 8),
       city: input.birthPlace || '',
       nz: input.enableNightZi ? "1" : "0",
     });
@@ -193,15 +209,23 @@ export default function HomePage() {
                 value={city}
                 onChange={(e) => handleCityChange(e.target.value)}
               >
-                {Object.keys(CITY_LONGITUDES).map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
-                <option value="自定义">自定义经度</option>
+                {regionOrder.map((region) => {
+                  const cities = citiesByRegion[region];
+                  if (!cities || cities.length === 0) return null;
+                  return (
+                    <optgroup key={region} label={REGION_LABELS[region]}>
+                      {cities.map((c) => (
+                        <option key={c} value={c}>
+                          {c}（UTC{CITIES[c].timezone >= 0 ? '+' : ''}{CITIES[c].timezone}）
+                        </option>
+                      ))}
+                    </optgroup>
+                  );
+                })}
+                <option value="自定义">自定义经度/时区</option>
               </select>
             </div>
-            <div>
+            <div className="grid grid-cols-2 gap-2">
               <input
                 type="number"
                 step="0.01"
@@ -210,10 +234,18 @@ export default function HomePage() {
                 onChange={(e) => setLongitude(e.target.value)}
                 placeholder="经度"
               />
+              <input
+                type="number"
+                step="0.5"
+                className="ink-input w-full"
+                value={timezone}
+                onChange={(e) => setTimezone(e.target.value)}
+                placeholder="UTC偏移"
+              />
             </div>
           </div>
           <p className="mt-1.5 text-xs text-ink-lightest">
-            经度用于真太阳时校正（4分钟×(经度-120°)）
+            经度用于真太阳时校正（4分钟×(经度−{parseFloat(timezone) > 0 ? timezone : `(${timezone})`}×15°)）· UTC{parseFloat(timezone) >= 0 ? '+' : ''}{timezone} · 选择城市自动填入，也可手动输入
           </p>
         </div>
 

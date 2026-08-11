@@ -40,6 +40,7 @@ export interface BirthInput {
   gender: Gender;
   longitude: number;      // 出生地经度
   birthPlace?: string;
+  timezone?: number;       // UTC 偏移小时数（默认 8 = 北京时间）
   enableNightZi?: boolean; // 是否启用夜子时/子正区分，默认 true
 }
 
@@ -220,6 +221,7 @@ export interface TimeCorrection {
   dstOffset: number;      // 夏令时偏移分钟数（60 或 0）
   equationOfTime: number; // 均时差（分钟）
   longitudeDiff: number;  // 经度差（分钟）
+  timezone: number;       // UTC 偏移小时数
 }
 
 // ============================================================

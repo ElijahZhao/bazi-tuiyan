@@ -56,7 +56,7 @@ function getRelationColor(type: string): string {
 }
 
 function formatTime(date: Date): string {
-  return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日 ${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
+  return `${date.getUTCFullYear()}年${date.getUTCMonth() + 1}月${date.getUTCDate()}日 ${String(date.getUTCHours()).padStart(2, "0")}:${String(date.getUTCMinutes()).padStart(2, "0")}`;
 }
 
 // ============================================================
@@ -79,6 +79,7 @@ function ChartContent() {
       gender: (searchParams.get("g") || "男") as "男" | "女",
       longitude: parseFloat(searchParams.get("lon") || "116.41"),
       birthPlace: searchParams.get("city") || "北京",
+      timezone: parseFloat(searchParams.get("tz") || "8"),
       enableNightZi: searchParams.get("nz") !== "0",
     };
   }, [searchParams]);

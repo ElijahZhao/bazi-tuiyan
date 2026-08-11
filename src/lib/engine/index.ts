@@ -30,6 +30,7 @@ import {
   HIDDEN_STEMS,
   jiaZiIndex,
   getKongWang,
+  CITIES,
   CITY_LONGITUDES as CITY_LON,
 } from './constants';
 
@@ -45,6 +46,7 @@ import {
  */
 export function paipan(input: BirthInput): BaziChart {
   // ========== 层1：时间校正 ==========
+  const timezone = input.timezone ?? CITIES[input.birthPlace || '']?.timezone ?? 8;
   const timeCorrection = correctTime(
     input.year,
     input.month,
@@ -52,6 +54,7 @@ export function paipan(input: BirthInput): BaziChart {
     input.hour,
     input.minute,
     input.longitude,
+    timezone,
   );
   const trueSolarTime = timeCorrection.trueSolarTime;
 

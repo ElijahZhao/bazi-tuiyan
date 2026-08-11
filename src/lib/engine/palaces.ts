@@ -136,7 +136,7 @@ export function calculateTaiYuan(
   // ---- 默认方法：前三百日法 ----
   // 从出生日前推 300 日
   const fetalDate = new Date(birthDate);
-  fetalDate.setDate(fetalDate.getDate() - 300);
+  fetalDate.setUTCDate(fetalDate.getUTCDate() - 300);
 
   // 用 getDayPillarIndex 求前推 300 日所在日的干支索引
   // 300 mod 60 = 0，故索引与出生日相同
