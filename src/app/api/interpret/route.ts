@@ -13,6 +13,9 @@
 
 import { NextRequest } from "next/server";
 
+// AI 解读是流式长请求，放宽 Vercel 函数最大执行时长（Hobby 上限 60s）
+export const maxDuration = 60;
+
 // ============================================================
 // 类型
 // ============================================================
@@ -232,8 +235,8 @@ async function parseSSEStream(
         const delta = parsed.choices?.[0]?.delta;
         if (!delta) continue;
 
-        // 优先取 content，其次取 reasoning_content
-        const text = delta.content || "";
+        // 优先取 content，其次取 reasoning_content（推理型模型可能只吐 reasoning_content）
+        const text = delta.content || delta.reasoning_content || "";
         if (text) onText(text);
       } catch {
         // JSON 解析失败，跳过
@@ -315,7 +318,7 @@ export async function POST(request: NextRequest) {
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: process.env.ARK_MODEL_ID || "deepseek-v4-flash-ga-260731",
+        model: process.env.ARK_MODEL_ID || process.env.ARK_MODEL || "deepseek-v4-flash-ga-260731",
         messages,
         stream: true,
         max_tokens: 800,
@@ -324,7 +327,12 @@ export async function POST(request: NextRequest) {
     });
 
     if (!llmResponse.ok) {
-      throw new Error(`LLM API 返回 ${llmResponse.status}`);
+      // 读取方舟返回的错误正文，便于定位（额度不足 / 鉴权失败 / 模型不存在…）
+      const detail = await llmResponse.text().catch(() => "");
+      console.error("[interpret] LLM API error", llmResponse.status, detail);
+      throw new Error(
+        `LLM API 返回 ${llmResponse.status}${detail ? `：${detail.slice(0, 200)}` : ""}`,
+      );
     }
 
     // ---------- 解析 SSE 流，转发纯文本 ----------

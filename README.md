@@ -374,7 +374,8 @@ npx vitest run
 ```env
 # 火山方舟 API（AI 解读用）
 ARK_API_KEY=your_api_key
-ARK_MODEL=your_model_id
+# 模型 ID（推荐 ARK_MODEL_ID；代码同时兼容旧名 ARK_MODEL）
+ARK_MODEL_ID=your_model_id
 ```
 
 > 注：排盘引擎全部纯客户端计算，无需任何环境变量即可运行核心功能。AI 解读为可选增强功能。

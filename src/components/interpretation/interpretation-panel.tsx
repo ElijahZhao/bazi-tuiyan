@@ -378,6 +378,17 @@ function AiTab({ chart }: { chart: BaziChart }) {
     return cleanAIText(full);
   };
 
+  /** 提取服务端返回的错误信息（后端失败时返回 { error: "..." } 的 JSON） */
+  const extractErrorDetail = async (response: Response): Promise<string> => {
+    try {
+      const data = await response.json();
+      if (data && typeof data.error === "string" && data.error) return data.error;
+    } catch {
+      // 响应不是 JSON，忽略
+    }
+    return `API 返回 ${response.status}`;
+  };
+
   // 生成初始解读
   const handleGenerate = async () => {
     // 中止前一个进行中的请求
@@ -399,7 +410,7 @@ function AiTab({ chart }: { chart: BaziChart }) {
       });
 
       if (!response.ok) {
-        throw new Error(`API 返回 ${response.status}`);
+        throw new Error(await extractErrorDetail(response));
       }
 
       const full = await readStream(response, controller.signal);
@@ -450,7 +461,7 @@ function AiTab({ chart }: { chart: BaziChart }) {
       });
 
       if (!response.ok) {
-        throw new Error(`API 返回 ${response.status}`);
+        throw new Error(await extractErrorDetail(response));
       }
 
       const full = await readStream(response, controller.signal);
@@ -526,13 +537,6 @@ function AiTab({ chart }: { chart: BaziChart }) {
             )}
           </div>
 
-          {/* 错误提示 */}
-          {error && (
-            <div className="rounded-lg bg-vermilion/10 p-3 text-sm text-vermilion">
-              {error}
-            </div>
-          )}
-
           {/* 追问输入框 */}
           <div className="flex items-center gap-2 rounded-lg border border-border bg-card p-2">
             <input
@@ -587,6 +591,13 @@ function AiTab({ chart }: { chart: BaziChart }) {
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* 错误提示（独立渲染：即使尚无任何消息、也不在加载中，失败信息也必须可见） */}
+      {error && (
+        <div className="rounded-lg bg-vermilion/10 p-3 text-sm text-vermilion">
+          {error}
         </div>
       )}
     </div>
