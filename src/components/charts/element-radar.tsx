@@ -8,7 +8,11 @@
  */
 
 import { useMemo } from "react";
-import type { EChartsOption } from "echarts";
+import type {
+  EChartsOption,
+  DefaultLabelFormatterCallbackParams as CallbackDataParams,
+  TooltipComponentFormatterCallbackParams,
+} from "echarts";
 import EChartsBase, { CHART_COLORS } from "./echarts-base";
 import type { BaziChart } from "@/lib/engine/types";
 import type { Element } from "@/lib/engine/types";
@@ -38,7 +42,8 @@ export default function ElementRadar({ chart, height = 320 }: ElementRadarProps)
     return {
       tooltip: {
         trigger: "item",
-        formatter: (params: any) => {
+        formatter: (raw: TooltipComponentFormatterCallbackParams) => {
+          const params = Array.isArray(raw) ? raw[0] : raw;
           const idx: number = params.dataIndex ?? 0;
           const el = ELEMENTS[idx] || "";
           const count = counts[el] || 0;
@@ -101,7 +106,7 @@ export default function ElementRadar({ chart, height = 320 }: ElementRadarProps)
                 width: 2,
               },
               itemStyle: {
-                color: (params: any) => {
+                color: (params: CallbackDataParams) => {
                   const el = ELEMENTS[params.dataIndex ?? 0];
                   return (CHART_COLORS[el] as string) || CHART_COLORS.vermilion;
                 },

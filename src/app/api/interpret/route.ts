@@ -321,7 +321,7 @@ export async function POST(request: NextRequest) {
         model: process.env.ARK_MODEL_ID || process.env.ARK_MODEL || "deepseek-v4-flash-ga-260731",
         messages,
         stream: true,
-        max_tokens: 800,
+        max_tokens: 1500,
         temperature: 0.7,
       }),
     });

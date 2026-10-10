@@ -236,6 +236,7 @@ function AiTab({ chart }: { chart: BaziChart }) {
 
   // 挂载时从 localStorage 恢复对话
   useEffect(() => {
+    /* eslint-disable react-hooks/set-state-in-effect */
     try {
       const saved = localStorage.getItem(storageKey);
       if (saved) {
@@ -248,6 +249,7 @@ function AiTab({ chart }: { chart: BaziChart }) {
       // 忽略解析错误
     }
     setHasLoaded(true);
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, [storageKey]);
 
   // 对话变化时保存到 localStorage

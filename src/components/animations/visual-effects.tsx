@@ -20,6 +20,13 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
+// 确定性伪随机：为装饰元素生成稳定的散布位置。
+// 渲染期直接调用 Math.random 会造成不纯与 SSR/客户端不一致，故改用基于种子的纯函数。
+function pseudoRandom(seed: number): number {
+  const x = Math.sin(seed * 127.1) * 43758.5453;
+  return x - Math.floor(x);
+}
+
 // ============================================================
 // 1. ScrollReveal — GSAP ScrollTrigger 滚动揭示
 // ============================================================
@@ -895,9 +902,9 @@ export function MysticBackground() {
           key={`gan-${i}`}
           className="mystic-rune absolute heading-font select-none"
           style={{
-            top: `${8 + Math.random() * 80}%`,
-            left: `${5 + Math.random() * 85}%`,
-            fontSize: `${28 + Math.random() * 40}px`,
+            top: `${8 + pseudoRandom(i * 4 + 1) * 80}%`,
+            left: `${5 + pseudoRandom(i * 4 + 2) * 85}%`,
+            fontSize: `${28 + pseudoRandom(i * 4 + 3) * 40}px`,
             color: i % 2 === 0 ? "var(--color-vermilion)" : "var(--color-indigo-deep)",
             opacity: 0.14,
           }}
@@ -912,9 +919,9 @@ export function MysticBackground() {
           key={`zhi-${i}`}
           className="mystic-rune absolute heading-font select-none"
           style={{
-            top: `${5 + Math.random() * 82}%`,
-            left: `${3 + Math.random() * 88}%`,
-            fontSize: `${24 + Math.random() * 36}px`,
+            top: `${5 + pseudoRandom(i * 4 + 101) * 82}%`,
+            left: `${3 + pseudoRandom(i * 4 + 102) * 88}%`,
+            fontSize: `${24 + pseudoRandom(i * 4 + 103) * 36}px`,
             color: i % 3 === 0 ? "var(--color-gold)" : i % 3 === 1 ? "var(--color-jade)" : "var(--color-ink)",
             opacity: 0.13,
           }}
@@ -929,9 +936,9 @@ export function MysticBackground() {
           key={`wx-${i}`}
           className="mystic-rune absolute heading-font select-none"
           style={{
-            top: `${15 + Math.random() * 70}%`,
-            left: `${8 + Math.random() * 80}%`,
-            fontSize: `${32 + Math.random() * 28}px`,
+            top: `${15 + pseudoRandom(i * 4 + 201) * 70}%`,
+            left: `${8 + pseudoRandom(i * 4 + 202) * 80}%`,
+            fontSize: `${32 + pseudoRandom(i * 4 + 203) * 28}px`,
             color: i === 0 ? "var(--color-gold)" : i === 1 ? "var(--color-jade)" : i === 2 ? "var(--color-water)" : i === 3 ? "var(--color-vermilion)" : "var(--color-earth)",
             opacity: 0.12,
           }}
@@ -946,9 +953,9 @@ export function MysticBackground() {
           key={`hex-${i}`}
           className="mystic-rune absolute heading-font select-none"
           style={{
-            top: `${10 + Math.random() * 75}%`,
-            left: `${5 + Math.random() * 85}%`,
-            fontSize: `${20 + Math.random() * 24}px`,
+            top: `${10 + pseudoRandom(i * 4 + 301) * 75}%`,
+            left: `${5 + pseudoRandom(i * 4 + 302) * 85}%`,
+            fontSize: `${20 + pseudoRandom(i * 4 + 303) * 24}px`,
             color: i % 2 === 0 ? "var(--color-ink)" : "var(--color-gold)",
             opacity: 0.11,
           }}

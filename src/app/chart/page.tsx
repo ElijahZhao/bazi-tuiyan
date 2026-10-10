@@ -90,6 +90,8 @@ function ChartContent() {
 
   // 命盘切换时重置保存状态，并检测当前命盘是否已保存
   useEffect(() => {
+    // 依赖 localStorage（仅浏览器可用），只能在挂载后同步，渲染期读取会造成 SSR 水合不一致
+    /* eslint-disable react-hooks/set-state-in-effect */
     setSaveName("");
     setShowSaveInput(false);
     try {
@@ -98,6 +100,7 @@ function ChartContent() {
     } catch {
       setSaved(false);
     }
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, [chart.id]);
 
   const handleSave = () => {

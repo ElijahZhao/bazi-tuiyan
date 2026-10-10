@@ -8,7 +8,11 @@
  */
 
 import { useMemo } from "react";
-import type { EChartsOption } from "echarts";
+import type {
+  EChartsOption,
+  DefaultLabelFormatterCallbackParams as CallbackDataParams,
+  TooltipComponentFormatterCallbackParams,
+} from "echarts";
 import EChartsBase, { CHART_COLORS } from "./echarts-base";
 import type { BaziChart, DaYun } from "@/lib/engine/types";
 import { STEM_ELEMENT } from "@/lib/engine/constants";
@@ -52,8 +56,11 @@ export default function DaYunTimeline({ chart, height = 280 }: DaYunTimelineProp
     return {
       tooltip: {
         trigger: "item",
-        formatter: (params: any) => {
-          const v: [number, number, string, string] = params.value;
+        formatter: (raw: TooltipComponentFormatterCallbackParams) => {
+          const params = Array.isArray(raw) ? raw[0] : raw;
+          const v = params.value as
+            | [number, number, string, string]
+            | undefined;
           if (!v) return "";
           const age = v[0];
           const ganzhi = v[2];
@@ -120,8 +127,12 @@ export default function DaYunTimeline({ chart, height = 280 }: DaYunTimelineProp
           symbol: "circle",
           label: {
             show: true,
-            formatter: (params: any) =>
-              params.value?.[2] || "",
+            formatter: (params: CallbackDataParams) => {
+              const v = params.value as
+                | [number, number, string, string]
+                | undefined;
+              return v?.[2] || "";
+            },
             position: "top",
             fontSize: 12,
             fontWeight: 700,

@@ -157,19 +157,6 @@ bazi-tuiyan/
 │   │   │   ├── index.ts              # 引擎入口
 │   │   │   └── __tests__/            # 单元测试（346 项）
 │   │   │
-│   │   ├── bazi/                     # 命理数据层
-│   │   │   ├── calculators/          # 计算器（薄封装）
-│   │   │   ├── constants/            # 数据表
-│   │   │   │   ├── canggan.ts        # 地支藏干
-│   │   │   │   ├── dizhi.ts          # 地支
-│   │   │   │   ├── tiangan.ts        # 天干
-│   │   │   │   ├── wuxing.ts         # 五行
-│   │   │   │   ├── nayin.ts          # 纳音
-│   │   │   │   ├── changsheng.ts     # 十二长生
-│   │   │   │   ├── shensha.ts        # 神煞规则
-│   │   │   │   └── dst.ts            # 夏令时日期表
-│   │   │   └── types.ts
-│   │   │
 │   │   ├── interpretation/
 │   │   │   └── knowledge-base.ts     # 命理知识库（AI 解读用）
 │   │   ├── lunar-utils.ts            # 农历工具

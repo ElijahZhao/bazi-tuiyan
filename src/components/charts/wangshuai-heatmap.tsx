@@ -8,7 +8,11 @@
  */
 
 import { useMemo } from "react";
-import type { EChartsOption } from "echarts";
+import type {
+  EChartsOption,
+  DefaultLabelFormatterCallbackParams as CallbackDataParams,
+  TooltipComponentFormatterCallbackParams,
+} from "echarts";
 import EChartsBase, { CHART_COLORS } from "./echarts-base";
 import type { BaziChart } from "@/lib/engine/types";
 import type { Element } from "@/lib/engine/types";
@@ -77,8 +81,11 @@ export default function WangShuaiHeatmap({ chart, height = 280 }: WangShuaiHeatm
     return {
       tooltip: {
         trigger: "item",
-        formatter: (params: any) => {
-          const v: [number, number, number, string] = params.value;
+        formatter: (raw: TooltipComponentFormatterCallbackParams) => {
+          const params = Array.isArray(raw) ? raw[0] : raw;
+          const v = params.value as
+            | [number, number, number, string]
+            | undefined;
           if (!v) return "";
           const el = ELEMENTS[v[0]];
           const season = SEASONS[v[1]];
@@ -102,7 +109,7 @@ export default function WangShuaiHeatmap({ chart, height = 280 }: WangShuaiHeatm
         splitArea: { show: true },
         axisLine: { lineStyle: { color: CHART_COLORS.border } },
         axisLabel: {
-          color: (value: any) =>
+          color: (value?: string | number) =>
             value === dayMasterElement ? CHART_COLORS.vermilion : CHART_COLORS.inkLight,
           fontSize: 14,
           fontWeight: 700,
@@ -132,8 +139,12 @@ export default function WangShuaiHeatmap({ chart, height = 280 }: WangShuaiHeatm
           data: heatmapData,
           label: {
             show: true,
-            formatter: (params: any) =>
-              params.value?.[3] || "",
+            formatter: (params: CallbackDataParams) => {
+              const v = params.value as
+                | [number, number, number, string]
+                | undefined;
+              return v?.[3] || "";
+            },
             fontSize: 16,
             fontWeight: 700,
             color: "#fff",

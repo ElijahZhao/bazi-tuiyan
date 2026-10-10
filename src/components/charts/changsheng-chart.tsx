@@ -8,7 +8,10 @@
  */
 
 import { useMemo } from "react";
-import type { EChartsOption } from "echarts";
+import type {
+  EChartsOption,
+  TooltipComponentFormatterCallbackParams,
+} from "echarts";
 import EChartsBase, { CHART_COLORS } from "./echarts-base";
 import type { BaziChart, ChangShengState } from "@/lib/engine/types";
 
@@ -76,8 +79,10 @@ export default function ChangShengChart({ chart, height = 300 }: ChangShengChart
     return {
       tooltip: {
         trigger: "item",
-        formatter: (params: any) => {
-          const stageName: string = params.data?.name || params.name || "";
+        formatter: (raw: TooltipComponentFormatterCallbackParams) => {
+          const params = Array.isArray(raw) ? raw[0] : raw;
+          const data = params.data as { name?: string } | undefined;
+          const stageName: string = data?.name || params.name || "";
           const matching = pillars.filter((p) => p.stage === stageName);
           if (matching.length === 0) {
             return `${stageName}（无柱在此宫）`;
