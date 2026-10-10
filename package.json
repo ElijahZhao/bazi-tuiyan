@@ -1,12 +1,16 @@
 {
-  "name": "bazi-init",
+  "name": "bazi-tuiyan",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
+  },
+  "engines": {
+    "node": ">=20.9.0"
   },
   "dependencies": {
     "astronomy-engine": "^2.1.19",
@@ -17,7 +21,7 @@
     "gsap": "^3.15.0",
     "lucide-react": "^1.31.0",
     "lunar-typescript": "^1.8.6",
-    "next": "16.3.0",
+    "next": "^16.4.0",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "tailwind-merge": "^3.6.0"
@@ -28,9 +32,12 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.3.0",
+    "eslint-config-next": "^16.4.0",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^4.1.10"
+  },
+  "overrides": {
+    "source-map-js": "1.2.2"
   }
 }

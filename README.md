@@ -9,7 +9,7 @@
 *祖宗之法不可违 · 精确天文排盘 · 纯客户端计算*
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-bazi--tuiyan.vercel.app-b91c1c?style=for-the-badge)](https://bazi-tuiyan.vercel.app/)
-[![Next.js](https://img.shields.io/badge/Next.js-16.3-000000?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-16.4-000000?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-19.2-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![License](https://img.shields.io/badge/License-MIT-a16207?style=for-the-badge)](LICENSE)
@@ -286,7 +286,7 @@ bazi-tuiyan/
 
 | 类别 | 技术 | 说明 |
 |------|------|------|
-| **框架** | Next.js 16.3 | App Router + Turbopack |
+| **框架** | Next.js 16.4 | App Router + Turbopack |
 | **UI** | React 19.2 | 最新 React |
 | **语言** | TypeScript 5.x | 全量类型安全 |
 | **样式** | Tailwind CSS v4 | 原子化 CSS + 设计系统 |
@@ -304,7 +304,7 @@ bazi-tuiyan/
 
 ### 环境要求
 
-- Node.js >= 18.18
+- Node.js >= 20.9
 - npm >= 9
 
 ### 安装与启动
