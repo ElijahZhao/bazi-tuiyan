@@ -246,11 +246,80 @@ async function parseSSEStream(
 }
 
 // ============================================================
+// 基础防护：同源校验 + 进程内限流
+// ============================================================
+
+const RATE_LIMIT_WINDOW_MS = 60_000;
+const RATE_LIMIT_MAX = 10;
+const RATE_LIMIT_STORE_MAX = 5_000;
+
+// 进程内限流表（单实例内有效；多实例部署时为近似限流）
+const rateLimitStore = new Map<string, { count: number; resetAt: number }>();
+
+function getClientIp(request: NextRequest): string {
+  const forwarded = request.headers.get("x-forwarded-for");
+  if (forwarded) return forwarded.split(",")[0].trim();
+  return request.headers.get("x-real-ip") || "unknown";
+}
+
+function isRateLimited(key: string): boolean {
+  const now = Date.now();
+
+  // 超过阈值时清理过期条目，避免内存无限增长
+  if (rateLimitStore.size > RATE_LIMIT_STORE_MAX) {
+    for (const [k, v] of rateLimitStore) {
+      if (now > v.resetAt) rateLimitStore.delete(k);
+    }
+  }
+
+  const entry = rateLimitStore.get(key);
+  if (!entry || now > entry.resetAt) {
+    rateLimitStore.set(key, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+    return false;
+  }
+  entry.count += 1;
+  return entry.count > RATE_LIMIT_MAX;
+}
+
+// 仅允许同源页面调用，降低接口被外部站点盗用刷额度的风险
+function isSameOrigin(request: NextRequest): boolean {
+  const origin = request.headers.get("origin");
+  if (!origin) return true; // 无 Origin（如服务端调用）时放行
+  try {
+    const requestHost = request.headers.get("host");
+    return !requestHost || new URL(origin).host === requestHost;
+  } catch {
+    return false;
+  }
+}
+
+// ============================================================
 // POST 处理
 // ============================================================
 
 export async function POST(request: NextRequest) {
   try {
+    if (!isSameOrigin(request)) {
+      return new Response(JSON.stringify({ error: "非法请求来源" }), {
+        status: 403,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const clientIp = getClientIp(request);
+    if (isRateLimited(clientIp)) {
+      return new Response(
+        JSON.stringify({ error: "请求过于频繁，请稍后再试" }),
+        {
+          status: 429,
+          headers: {
+            "Content-Type": "application/json",
+            "Retry-After": "60",
+          },
+        },
+      );
+    }
+
     const body = (await request.json()) as InterpretRequest;
 
     // 检查 API key
