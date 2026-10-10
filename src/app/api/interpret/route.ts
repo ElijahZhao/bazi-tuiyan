@@ -235,8 +235,9 @@ async function parseSSEStream(
         const delta = parsed.choices?.[0]?.delta;
         if (!delta) continue;
 
-        // 优先取 content，其次取 reasoning_content（推理型模型可能只吐 reasoning_content）
-        const text = delta.content || delta.reasoning_content || "";
+        // 只转发最终回答（content）。推理型模型会在 content 之前单独流式输出思维链
+        // （reasoning_content），必须忽略，否则用户会看到模型的思考过程。
+        const text = typeof delta.content === "string" ? delta.content : "";
         if (text) onText(text);
       } catch {
         // JSON 解析失败，跳过
