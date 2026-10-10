@@ -45,8 +45,8 @@ const FEATURES = [
   },
   {
     icon: "🌍",
-    title: "150+国际城市",
-    desc: "覆盖六大洲，自动匹配经度与时区",
+    title: "188 座城市",
+    desc: "含中国 87 座、覆盖六大洲，自动匹配经度与时区",
     color: "from-gold/10 to-gold/5",
     border: "border-gold/20",
     span: "",
@@ -62,7 +62,7 @@ const FEATURES = [
 ];
 
 const STATS = [
-  { value: 150, suffix: "+", label: "国际城市" },
+  { value: 188, suffix: "", label: "覆盖城市" },
   { value: 346, suffix: "", label: "单元测试" },
   { value: 12, suffix: "", label: "古籍原典" },
   { value: 9, suffix: "", label: "层排盘引擎" },
